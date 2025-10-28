@@ -16,7 +16,6 @@
 (set-face-attribute 'default nil
                     :height 200 :weight 'normal :family "Berkeley Mono")
 
-(set-fringe-mode 10)                    ; frame edges set to 10px
 (recentf-mode 1)                        ; remember recent files
 (save-place-mode 1)                     ; remember cursor position
 (savehist-mode 1)                       ; enable history saving
@@ -39,10 +38,17 @@
   :hook
   (after-init . server-start))
 
-(use-package kaolin-themes
-  :ensure t
+;; (use-package kaolin-themes
+;;   :ensure t
+;;   :config
+;;   (load-theme 'kaolin-dark t))
+
+(use-package zenburn-theme
   :config
-  (load-theme 'kaolin-dark t))
+  (load-theme 'zenburn t))
+
+(use-package magit
+  :ensure t)
 
 (use-package vertico
   :ensure t
@@ -62,10 +68,10 @@
   (marginalia-mode))
 
 (use-package consult
-    :ensure t
-    :bind (("C-c f l" . 'consult-line)
-           ("C-c f f" . 'consult-fd)
-           ("C-c f g" . 'consult-ripgrep)))
+  :ensure t
+  :bind (("C-c f l" . 'consult-line)
+         ("C-c f f" . 'consult-fd)
+         ("C-c f g" . 'consult-ripgrep)))
 
 (use-package embark
   :ensure t
@@ -121,6 +127,7 @@
   (lsp-headerline-breadcrumb-enable nil)
   (lsp-keymap-prefix "C-c L")
   :hook ((python-mode . lsp)
+         (go-mode . lsp)
          (lsp-mode . lsp-completion-mode))
   :commands lsp)
 
@@ -140,19 +147,23 @@
   :ensure t
   :hook (python-mode . flymake-ruff-load))
 
-(use-package ruff-format
-  :ensure t
-  :hook (python-mode . ruff-format-on-save-mode))
-
-(use-package eglot
-  :ensure nil
-  :custom
-  (eglot-send-changes-idle-time 0.1)
-  (eglot-workspace-configuration '((:gopls . ((gofumpt . t)))))
-  :hook ((go-mode . eglot-ensure)))
 
 (use-package go-mode
   :ensure t)
+
+(use-package apheleia
+  :ensure t
+  :commands (apheleia-mode apheleia-global-mode)
+  :hook ((prog-mode . apheleia-mode))
+  :config
+  ;; Replace default (black) to use ruff for sorting import and formatting.
+  (setf (alist-get 'python-mode apheleia-mode-alist)
+        '(ruff-isort ruff))
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist)
+        '(ruff-isort ruff))
+  ;; Format Go with gofumpt
+  (setf (alist-get 'go-mode apheleia-mode-alist)
+        '(gofumpt)))
 
 (use-package which-key
   :ensure nil
@@ -164,15 +175,13 @@
   (which-key-add-column-padding 1)
   (which-key-max-description-length 40))
 
-;; Window management keybindings
-(global-set-key (kbd "C-c C-h") 'windmove-left)
-(global-set-key (kbd "C-c C-j") 'windmove-down)
-(global-set-key (kbd "C-c C-k") 'windmove-up)
-(global-set-key (kbd "C-c C-l") 'windmove-right)
-(global-set-key (kbd "C-c C-_") 'split-window-below)
-(global-set-key (kbd "C-c C-|") 'split-window-right)
-(global-set-key (kbd "C-c C-c") 'delete-window)
-(global-set-key (kbd "C-c C-o") 'delete-other-windows)
+(use-package avy
+  :ensure t
+  :bind (("M-s" . avy-goto-char-2)))
+
+(use-package ace-window
+  :ensure t
+  :bind (("M-o" . ace-window)))
 
 ;; Local variables:
 ;; byte-compile-warnings: (not obsolete free-vars)
