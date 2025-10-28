@@ -35,14 +35,14 @@
 (use-package emacs
   :config
   (setq-default scroll-preserve-screen-position t)
-  (setq-default scroll-conservatively 1) ;; affects `scroll-step'
+  (setq-default scroll-conservatively 1) ; affects `scroll-step'
   (setq-default scroll-margin 0)
-  (define-minor-mode crnvl96/scroll-centre-cursor-mode
+  (define-minor-mode prot/scroll-centre-cursor-mode
     "Toggle centred cursor scrolling behaviour."
     :init-value nil
     :lighter " S="
     :global nil
-    (if crnvl96/scroll-centre-cursor-mode
+    (if prot/scroll-centre-cursor-mode
         (setq-local scroll-margin (* (frame-height) 2)
                     scroll-conservatively 0
                     maximum-scroll-margin 0.5)
@@ -51,18 +51,17 @@
                        maximum-scroll-margin
                        scroll-margin))
         (kill-local-variable `,local))))
-  :bind
-  ("C-c L" . crnvl96/scroll-centre-cursor-mode))
+  :bind ("C-c S" . prot/scroll-centre-cursor-mode))
 
-(use-package server
-  :ensure nil
-  :commands server-start
-  :hook
-  (after-init . server-start))
+ (use-package server
+   :ensure nil
+   :commands server-start
+   :hook
+   (after-init . server-start))
 
-(use-package zenburn-theme
-  :config
-  (load-theme 'zenburn t))
+(use-package moe-theme
+              :config
+              (load-theme 'moe-dark t))
 
 (use-package magit
   :ensure t)
