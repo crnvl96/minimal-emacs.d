@@ -1,17 +1,17 @@
 ;;; post-init.el --- Post Init -*- no-byte-compile: t; lexical-binding: t; -*-
 
 (use-package compile-angel
-  :demand t
-  :custom
-  (compile-angel-verbose t)
-  :config
-  (push "/init.el" compile-angel-excluded-files)
-  (push "/early-init.el" compile-angel-excluded-files)
-  (push "/pre-init.el" compile-angel-excluded-files)
-  (push "/post-init.el" compile-angel-excluded-files)
-  (push "/pre-early-init.el" compile-angel-excluded-files)
-  (push "/post-early-init.el" compile-angel-excluded-files)
-  (compile-angel-on-load-mode 1))
+             :demand t
+             :custom
+             (compile-angel-verbose t)
+             :config
+             (push "/init.el" compile-angel-excluded-files)
+             (push "/early-init.el" compile-angel-excluded-files)
+             (push "/pre-init.el" compile-angel-excluded-files)
+             (push "/post-init.el" compile-angel-excluded-files)
+             (push "/pre-early-init.el" compile-angel-excluded-files)
+             (push "/post-early-init.el" compile-angel-excluded-files)
+             (compile-angel-on-load-mode 1))
 
 (set-face-attribute 'default nil
                     :height 200 :weight 'normal :family "Berkeley Mono")
@@ -33,155 +33,160 @@
   (add-hook hook #'display-line-numbers-mode))
 
 (use-package server
-  :ensure nil
-  :commands server-start
-  :hook
-  (after-init . server-start))
-
-;; (use-package kaolin-themes
-;;   :ensure t
-;;   :config
-;;   (load-theme 'kaolin-dark t))
+             :ensure nil
+             :commands server-start
+             :hook
+             (after-init . server-start))
 
 (use-package zenburn-theme
-  :config
-  (load-theme 'zenburn t))
+             :config
+             (load-theme 'zenburn t))
 
 (use-package magit
-  :ensure t)
+             :ensure t)
 
 (use-package vertico
-  :ensure t
-  :config
-  (vertico-mode))
+             :ensure t
+             :config
+             (vertico-mode))
 
 (use-package orderless
-  :ensure t
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles partial-completion))))
-  (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
+             :ensure t
+             :custom
+             (completion-styles '(orderless basic))
+             (completion-category-overrides '((file (styles partial-completion))))
+             (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
 
 (use-package marginalia
-  :ensure t
-  :config
-  (marginalia-mode))
+             :ensure t
+             :config
+             (marginalia-mode))
 
 (use-package consult
-  :ensure t
-  :bind (("C-c f l" . 'consult-line)
-         ("C-c f f" . 'consult-fd)
-         ("C-c f g" . 'consult-ripgrep)))
+             :ensure t
+             :bind (("C-c f l" . 'consult-line)
+                    ("C-c f f" . 'consult-fd)
+                    ("C-c f g" . 'consult-ripgrep)))
 
 (use-package embark
-  :ensure t
-  :bind
-  (("C-." . embark-act)
-   ("C-," . embark-dwim)
-   ("C-/" . embark-bindings))
-  :init
-  (setq prefix-help-command #'embark-prefix-help-command)
-  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
-  (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
-  :config
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none)))))
+             :ensure t
+             :bind
+             (("C-." . embark-act)
+              ("C-," . embark-dwim)
+              ("C-/" . embark-bindings))
+             :init
+             (setq prefix-help-command #'embark-prefix-help-command)
+             ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+             (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+             :config
+             (add-to-list 'display-buffer-alist
+                          '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                            nil
+                            (window-parameters (mode-line-format . none)))))
 
 (use-package embark-consult
-  :ensure t
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
+             :ensure t
+             :hook
+             (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package corfu
-  :ensure t
-  :custom
-  (corfu-cycle nil)
-  (corfu-auto t)
-  (corfu-auto-prefix 3)
-  (corfu-auto-delay 0.0)
-  (corfu-popupinfo-delay '(0.5 . 0.2))
-  (corfu-preview-current 'insert)
-  (corfu-preselect 'prompt)
-  :bind (:map corfu-map ("M-n" . corfu-complete))
-  :init
-  (global-corfu-mode)
-  (corfu-popupinfo-mode))
+             :ensure t
+             :custom
+             (corfu-cycle nil)
+             (corfu-auto t)
+             (corfu-auto-prefix 3)
+             (corfu-auto-delay 0.0)
+             (corfu-popupinfo-delay '(0.5 . 0.2))
+             (corfu-preview-current 'insert)
+             (corfu-preselect 'prompt)
+             :bind (:map corfu-map ("M-n" . corfu-complete))
+             :init
+             (global-corfu-mode)
+             (corfu-popupinfo-mode))
+
+(use-package corfu-terminal)
 
 (use-package cape
-  :ensure t
-  :init
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-  (add-to-list 'completion-at-point-functions #'cape-history)
-  (add-to-list 'completion-at-point-functions #'cape-keyword)
-  (add-to-list 'completion-at-point-functions #'cape-abbrev))
+             :ensure t
+             :init
+             (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+             (add-to-list 'completion-at-point-functions #'cape-file)
+             (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+             (add-to-list 'completion-at-point-functions #'cape-history)
+             (add-to-list 'completion-at-point-functions #'cape-keyword)
+             (add-to-list 'completion-at-point-functions #'cape-abbrev))
 
 (use-package lsp-mode
-  :ensure t
-  :custom
-  (lsp-completion-provider :none)
-  (lsp-enable-symbol-highlighting nil)
-  (lsp-headerline-breadcrumb-enable nil)
-  (lsp-keymap-prefix "C-c L")
-  :hook ((python-mode . lsp)
-         (go-mode . lsp)
-         (lsp-mode . lsp-completion-mode))
-  :commands lsp)
+             :ensure t
+             :custom
+             (lsp-completion-provider :none)
+             (lsp-enable-symbol-highlighting nil)
+             (lsp-headerline-breadcrumb-enable nil)
+             (lsp-keymap-prefix "C-c L")
+             :hook ((python-mode . lsp)
+                    (go-mode . lsp)
+                    (lsp-mode . lsp-completion-mode))
+             :commands lsp)
 
 (use-package lsp-ui
-  :ensure t
-  :custom
-  (lsp-ui-sideline-enable nil)
-  :hook (lsp-mode . lsp-ui-mode))
+             :ensure t
+             :custom
+             (lsp-ui-sideline-enable nil)
+             :hook (lsp-mode . lsp-ui-mode))
 
 (use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp))))
+             :ensure t
+             :hook (python-mode . (lambda ()
+                                    (require 'lsp-pyright)
+                                    (lsp))))
 
 (use-package flymake-ruff
-  :ensure t
-  :hook (python-mode . flymake-ruff-load))
+             :ensure t
+             :hook (python-mode . flymake-ruff-load))
 
 
 (use-package go-mode
-  :ensure t)
+             :ensure t)
 
 (use-package apheleia
-  :ensure t
-  :commands (apheleia-mode apheleia-global-mode)
-  :hook ((prog-mode . apheleia-mode))
-  :config
-  ;; Replace default (black) to use ruff for sorting import and formatting.
-  (setf (alist-get 'python-mode apheleia-mode-alist)
-        '(ruff-isort ruff))
-  (setf (alist-get 'python-ts-mode apheleia-mode-alist)
-        '(ruff-isort ruff))
-  ;; Format Go with gofumpt
-  (setf (alist-get 'go-mode apheleia-mode-alist)
-        '(gofumpt)))
+             :ensure t
+             :commands (apheleia-mode apheleia-global-mode)
+             :hook ((prog-mode . apheleia-mode))
+             :config
+             ;; Replace default (black) to use ruff for sorting import and formatting.
+             (setf (alist-get 'python-mode apheleia-mode-alist)
+                   '(ruff-isort ruff))
+             (setf (alist-get 'python-ts-mode apheleia-mode-alist)
+                   '(ruff-isort ruff))
+             ;; Format Go with gofumpt
+             (setf (alist-get 'go-mode apheleia-mode-alist)
+                   '(gofumpt)))
 
 (use-package which-key
-  :ensure nil
-  :commands which-key-mode
-  :hook (after-init . which-key-mode)
-  :custom
-  (which-key-idle-delay 0.5)
-  (which-key-idle-secondary-delay 0.25)
-  (which-key-add-column-padding 1)
-  (which-key-max-description-length 40))
+             :ensure nil
+             :commands which-key-mode
+             :hook (after-init . which-key-mode)
+             :custom
+             (which-key-idle-delay 0.5)
+             (which-key-idle-secondary-delay 0.25)
+             (which-key-add-column-padding 1)
+             (which-key-max-description-length 40))
 
 (use-package avy
-  :ensure t
-  :bind (("M-s" . avy-goto-char-2)))
+             :ensure t
+             :bind (("M-s" . avy-goto-char-2)))
 
 (use-package ace-window
-  :ensure t
-  :bind (("M-o" . ace-window)))
+             :ensure t
+             :bind (("M-o" . ace-window)))
+
+(use-package exec-path-from-shell
+             :ensure t
+             :config
+             (exec-path-from-shell-initialize))
+
+(use-package eat
+             :ensure t)
 
 ;; Local variables:
 ;; byte-compile-warnings: (not obsolete free-vars)
