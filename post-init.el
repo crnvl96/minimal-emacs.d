@@ -38,11 +38,12 @@
   (setq-default scroll-conservatively 1)
   (setq-default scroll-margin 0)
 
-  (define-minor-mode crnvl96/scroll-center-cursor-mode
+  (define-minor-mode crnvl96/scroll-centre-cursor-mode
+    "Toggle centred cursor scrolling behaviour."
     :init-value nil
     :lighter " S="
     :global nil
-    (if crnvl96/scroll-center-cursor-mode
+    (if crnvl96/scroll-centre-cursor-mode
         (setq-local scroll-margin (* (frame-height) 2)
                     scroll-conservatively 0
                     maximum-scroll-margin 0.5)
@@ -51,8 +52,7 @@
                        maximum-scroll-margin
                        scroll-margin))
         (kill-local-variable `,local))))
-
-  :bind ("C-c S" . crnvl96/scroll-center-cursor-mode))
+  :bind ("C-c L" . crnvl96/scroll-centre-cursor-mode))
 
 (use-package server
   :ensure nil
@@ -161,7 +161,7 @@
   (lsp-completion-provider :none)
   (lsp-enable-symbol-highlighting nil)
   (lsp-headerline-breadcrumb-enable nil)
-  (lsp-keymap-prefix "C-c L")
+  (lsp-keymap-prefix "C-c l")
   :hook ((python-ts-mode . lsp)
          (go-ts-mode . lsp)
          (lsp-mode . lsp-completion-mode))
