@@ -35,14 +35,14 @@
 (use-package emacs
   :config
   (setq-default scroll-preserve-screen-position t)
-  (setq-default scroll-conservatively 1) ; affects `scroll-step'
+  (setq-default scroll-conservatively 1)
   (setq-default scroll-margin 0)
-  (define-minor-mode prot/scroll-centre-cursor-mode
-    "Toggle centred cursor scrolling behaviour."
+
+  (define-minor-mode crnvl96/scroll-center-cursor-mode
     :init-value nil
     :lighter " S="
     :global nil
-    (if prot/scroll-centre-cursor-mode
+    (if crnvl96/scroll-center-cursor-mode
         (setq-local scroll-margin (* (frame-height) 2)
                     scroll-conservatively 0
                     maximum-scroll-margin 0.5)
@@ -51,17 +51,32 @@
                        maximum-scroll-margin
                        scroll-margin))
         (kill-local-variable `,local))))
-  :bind ("C-c S" . prot/scroll-centre-cursor-mode))
 
- (use-package server
-   :ensure nil
-   :commands server-start
-   :hook
-   (after-init . server-start))
+  :bind ("C-c S" . crnvl96/scroll-center-cursor-mode))
 
-(use-package moe-theme
-              :config
-              (load-theme 'moe-dark t))
+(use-package server
+  :ensure nil
+  :commands server-start
+  :hook
+  (after-init . server-start))
+
+;; (use-package moe-theme
+;;   :config
+;;   (load-theme 'moe-dark t))
+
+(use-package nord-theme
+  :config
+  (load-theme 'nord t))
+
+;; (use-package dracula-theme
+;;   :config
+;;   (load-theme 'dracula t))
+
+;; (use-package catppuccin-theme
+;;   :custom
+;;   (catppuccin-flavor 'latte) ;; 'latte, 'macchiato, 'mocha, 'frappe
+;;   :config
+;;   (load-theme 'catppuccin t))
 
 (use-package magit
   :ensure t)
@@ -89,6 +104,9 @@
          ("C-c f f" . 'consult-fd)
          ("C-c f g" . 'consult-ripgrep)))
 
+(use-package wgrep
+  :ensure t)
+
 (use-package embark
   :ensure t
   :bind
@@ -114,7 +132,7 @@
   :ensure t
   :custom
   (corfu-cycle nil)
-  (corfu-auto t)
+  (corfu-auto nil)
   (corfu-auto-prefix 3)
   (corfu-auto-delay 0.0)
   (corfu-popupinfo-delay '(0.5 . 0.2))
@@ -213,12 +231,41 @@
   :ensure t
   :bind (("C-=" . er/expand-region)))
 
+(use-package change-inner
+  :ensure t
+  :bind (("M-u" . 'change-outer)
+         ("M-i" . 'change-inner)))
+
+(use-package multiple-cursors
+  :ensure t
+  :bind (("C-S-c C-S-c" . mc/edit-lines)
+         ("C->" . mc/mark-next-like-this)
+         ("C-<" . mc/mark-previous-like-this)
+         ("C-c C->" . mc/mark-all-like-this)))
+
 (setq treesit-auto-langs '(python go))
 
 (use-package exec-path-from-shell
   :ensure t
   :config
   (exec-path-from-shell-initialize))
+
+(use-package undo-fu
+  :ensure t
+  :demand t
+  :commands (undo-fu-only-undo
+             undo-fu-only-redo
+             undo-fu-only-redo-all
+             undo-fu-disable-checkpoint)
+  :config
+  (global-unset-key (kbd "C-z"))
+  (global-set-key (kbd "C-z") 'undo-fu-only-undo)
+  (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
+
+(use-package undo-fu-session
+  :ensure t
+  :commands undo-fu-session-global-mode
+  :hook (after-init . undo-fu-session-global-mode))
 
 (use-package eat
   :ensure t)
@@ -227,4 +274,4 @@
 ;; byte-compile-warnings: (not obsolete free-vars)
 ;; End:
 
-;;; post-init.el ends here
+;;; post-init.el ends her
