@@ -1,7 +1,6 @@
 ;;; post-init.el --- Post Init -*- no-byte-compile: t; lexical-binding: t; -*-
 
 (minimal-emacs-load-user-init "user/compile.el")
-(minimal-emacs-load-user-init "user/opts.el")
 (minimal-emacs-load-user-init "user/emacs.el")
 (minimal-emacs-load-user-init "user/themes.el")
 
@@ -99,6 +98,8 @@
   (global-treesit-auto-mode))
 
 (setq treesit-auto-langs '(python go))
+;; Set the maximum level of syntax highlighting for Tree-sitter modes
+(setq treesit-font-lock-level 4)
 
 (use-package apheleia
   :ensure t
@@ -122,27 +123,11 @@
 
 (use-package avy
   :ensure t
-  :bind (("M-s" . avy-goto-char-2)))
+  :bind (("M-i" . avy-goto-char-2)))
 
 (use-package ace-window
   :ensure t
   :bind (("M-o" . ace-window)))
-
-(use-package expand-region
-  :ensure t
-  :bind (("C-=" . er/expand-region)))
-
-(use-package change-inner
-  :ensure t
-  :bind (("M-u" . 'change-outer)
-         ("M-i" . 'change-inner)))
-
-(use-package multiple-cursors
-  :ensure t
-  :bind (("C-S-c C-S-c" . mc/edit-lines)
-         ("C->" . mc/mark-next-like-this)
-         ("C-<" . mc/mark-previous-like-this)
-         ("C-c C->" . mc/mark-all-like-this)))
 
 (use-package exec-path-from-shell
   :ensure t
@@ -168,6 +153,34 @@
 
 (use-package eat
   :ensure t)
+
+(use-package buffer-terminator
+  :ensure t
+  :custom
+  (buffer-terminator-verbose nil)
+  (buffer-terminator-inactivity-timeout (* 10 60)) ;10 minutes
+  (buffer-terminator-interval (* 10 60)) ; 10 minutes
+  :config
+  (buffer-terminator-mode 1))
+
+;; Helpful is an alternative to the built-in Emacs help that provides much more
+;; contextual information.
+(use-package helpful
+  :ensure t
+  :commands (helpful-callable
+             helpful-variable
+             helpful-key
+             helpful-command
+             helpful-at-point
+             helpful-function)
+  :bind
+  ([remap describe-command] . helpful-command)
+  ([remap describe-function] . helpful-callable)
+  ([remap describe-key] . helpful-key)
+  ([remap describe-symbol] . helpful-symbol)
+  ([remap describe-variable] . helpful-variable)
+  :custom
+  (helpful-max-buffers 7))
 
 ;; Local variables:
 ;; byte-compile-warnings: (not obsolete free-vars)
