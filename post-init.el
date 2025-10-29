@@ -1,18 +1,5 @@
 ;;; post-init.el --- Post Init -*- no-byte-compile: t; lexical-binding: t; -*-
 
-(use-package compile-angel
-  :demand t
-  :custom
-  (compile-angel-verbose t)
-  :config
-  (push "/init.el" compile-angel-excluded-files)
-  (push "/early-init.el" compile-angel-excluded-files)
-  (push "/pre-init.el" compile-angel-excluded-files)
-  (push "/post-init.el" compile-angel-excluded-files)
-  (push "/pre-early-init.el" compile-angel-excluded-files)
-  (push "/post-early-init.el" compile-angel-excluded-files)
-  (compile-angel-on-load-mode 1))
-
 (set-face-attribute 'default nil
                     :height 200 :weight 'normal :family "Berkeley Mono")
 
@@ -24,6 +11,8 @@
 (global-auto-revert-mode 1)
 (delete-selection-mode 1)
 
+(setq display-buffer-base-action '(display-buffer-same-window))
+
 (setq package-install-upgrade-built-in t)
 (setq column-number-mode t)
 (setq mode-line-position-column-line-format '("%l:%C"))
@@ -32,34 +21,9 @@
 (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
   (add-hook hook #'display-line-numbers-mode))
 
-(use-package emacs
-  :config
-  (setq-default scroll-preserve-screen-position t)
-  (setq-default scroll-conservatively 1)
-  (setq-default scroll-margin 0)
-
-  (define-minor-mode crnvl96/scroll-centre-cursor-mode
-    "Toggle centred cursor scrolling behaviour."
-    :init-value nil
-    :lighter " S="
-    :global nil
-    (if crnvl96/scroll-centre-cursor-mode
-        (setq-local scroll-margin (* (frame-height) 2)
-                    scroll-conservatively 0
-                    maximum-scroll-margin 0.5)
-      (dolist (local '(scroll-preserve-screen-position
-                       scroll-conservatively
-                       maximum-scroll-margin
-                       scroll-margin))
-        (kill-local-variable `,local))))
-
-  :bind ("C-c L" . crnvl96/scroll-centre-cursor-mode))
-
-(use-package moe-theme)
-(use-package nord-theme)
-(use-package dracula-theme)
-(use-package catppuccin-theme) ;; 'latte, 'macchiato, 'mocha, 'frappe
-(load-theme 'nord t)
+(minimal-emacs-load-user-init "user/compile.el")
+(minimal-emacs-load-user-init "user/emacs.el")
+(minimal-emacs-load-user-init "user/themes.el")
 
 (use-package magit
   :ensure t)
