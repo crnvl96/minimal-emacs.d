@@ -16,15 +16,15 @@
 (set-face-attribute 'default nil
                     :height 200 :weight 'normal :family "Berkeley Mono")
 
-(recentf-mode 1)                        ; remember recent files
-(save-place-mode 1)                     ; remember cursor position
-(savehist-mode 1)                       ; enable history saving
-(global-hl-line-mode 1)                 ; enable current line highlight
-(global-visual-line-mode t)             ; visual line breaking
-(global-auto-revert-mode 1)             ; update externaly edited files
+(recentf-mode 1)
+(save-place-mode 1)
+(savehist-mode 1)
+(global-hl-line-mode 1)
+(global-visual-line-mode t)
+(global-auto-revert-mode 1)
+(delete-selection-mode 1)
 
 (setq package-install-upgrade-built-in t)
-(delete-selection-mode 1)
 (setq column-number-mode t)
 (setq mode-line-position-column-line-format '("%l:%C"))
 
@@ -52,31 +52,14 @@
                        maximum-scroll-margin
                        scroll-margin))
         (kill-local-variable `,local))))
+
   :bind ("C-c L" . crnvl96/scroll-centre-cursor-mode))
 
-(use-package server
-  :ensure nil
-  :commands server-start
-  :hook
-  (after-init . server-start))
-
-;; (use-package moe-theme
-;;   :config
-;;   (load-theme 'moe-dark t))
-
-(use-package nord-theme
-  :config
-  (load-theme 'nord t))
-
-;; (use-package dracula-theme
-;;   :config
-;;   (load-theme 'dracula t))
-
-;; (use-package catppuccin-theme
-;;   :custom
-;;   (catppuccin-flavor 'latte) ;; 'latte, 'macchiato, 'mocha, 'frappe
-;;   :config
-;;   (load-theme 'catppuccin t))
+(use-package moe-theme)
+(use-package nord-theme)
+(use-package dracula-theme)
+(use-package catppuccin-theme) ;; 'latte, 'macchiato, 'mocha, 'frappe
+(load-theme 'nord t)
 
 (use-package magit
   :ensure t)
@@ -143,46 +126,22 @@
   (global-corfu-mode)
   (corfu-popupinfo-mode))
 
-(use-package corfu-terminal)
-
 (use-package cape
   :ensure t
   :init
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-  (add-to-list 'completion-at-point-functions #'cape-history)
-  (add-to-list 'completion-at-point-functions #'cape-keyword)
-  (add-to-list 'completion-at-point-functions #'cape-abbrev))
+  (add-to-list 'completion-at-point-functions #'cape-elisp-symbol))
 
-(use-package lsp-mode
-  :ensure t
+(use-package eglot
+  :ensure nil
   :custom
-  (lsp-completion-provider :none)
-  (lsp-enable-symbol-highlighting nil)
-  (lsp-headerline-breadcrumb-enable nil)
-  (lsp-keymap-prefix "C-c l")
-  :hook ((python-ts-mode . lsp)
-         (go-ts-mode . lsp)
-         (lsp-mode . lsp-completion-mode))
-  :commands lsp)
+  (eglot-completion-at-point-function nil)
+  :hook ((python-ts-mode . eglot-ensure)
+         (go-ts-mode . eglot-ensure)))
 
-(use-package lsp-ui
-  :ensure t
-  :custom
-  (lsp-ui-sideline-enable nil)
-  :hook (lsp-mode . lsp-ui-mode))
-
-(use-package lsp-pyright
-  :ensure t
-  :hook (python-ts-mode . (lambda ()
-                            (require 'lsp-pyright)
-                            (lsp))))
-
-(use-package flymake-ruff
-  :ensure t
-  :hook (python-ts-mode . flymake-ruff-load))
-
+(use-package pyvenv
+  :ensure t)
 
 (use-package go-mode
   :ensure t)
@@ -195,17 +154,15 @@
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
 
+(setq treesit-auto-langs '(python go))
+
 (use-package apheleia
   :ensure t
   :commands (apheleia-mode apheleia-global-mode)
   :hook ((prog-mode . apheleia-mode))
   :config
-  ;; Replace default (black) to use ruff for sorting import and formatting.
-  (setf (alist-get 'python-mode apheleia-mode-alist)
-        '(ruff-isort ruff))
   (setf (alist-get 'python-ts-mode apheleia-mode-alist)
         '(ruff-isort ruff))
-  ;; Format Go with gofumpt
   (setf (alist-get 'go-ts-mode apheleia-mode-alist)
         '(gofumpt)))
 
@@ -242,8 +199,6 @@
          ("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
          ("C-c C->" . mc/mark-all-like-this)))
-
-(setq treesit-auto-langs '(python go))
 
 (use-package exec-path-from-shell
   :ensure t
