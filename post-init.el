@@ -3,6 +3,7 @@
 (minimal-emacs-load-user-init "user/compile.el")
 (minimal-emacs-load-user-init "user/emacs.el")
 (minimal-emacs-load-user-init "user/themes.el")
+(minimal-emacs-load-user-init "user/treesit.el")
 
 (use-package magit
   :ensure t)
@@ -88,18 +89,6 @@
 
 (use-package go-mode
   :ensure t)
-
-(use-package treesit-auto
-  :ensure t
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
-
-(setq treesit-auto-langs '(python go))
-;; Set the maximum level of syntax highlighting for Tree-sitter modes
-(setq treesit-font-lock-level 4)
 
 (use-package apheleia
   :ensure t
