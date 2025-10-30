@@ -5,9 +5,7 @@
 (minimal-emacs-load-user-init "user/themes.el")
 (minimal-emacs-load-user-init "user/treesit.el")
 (minimal-emacs-load-user-init "user/completion.el")
-
-(use-package magit
-  :ensure t)
+(minimal-emacs-load-user-init "user/magit.el")
 
 (use-package consult
   :ensure t
