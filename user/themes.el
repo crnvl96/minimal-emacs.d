@@ -4,4 +4,4 @@
 (use-package nord-theme)
 (use-package dracula-theme)
 (use-package catppuccin-theme) ;; 'latte, 'macchiato, 'mocha, 'frappe
-(load-theme 'dracula t)
+(load-theme 'catppuccin t)

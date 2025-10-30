@@ -9,11 +9,6 @@
 (use-package magit
   :ensure t)
 
-(use-package marginalia
-  :ensure t
-  :config
-  (marginalia-mode))
-
 (use-package consult
   :ensure t
   :bind (("C-c f l" . 'consult-line)
