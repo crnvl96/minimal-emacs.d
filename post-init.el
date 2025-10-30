@@ -4,21 +4,10 @@
 (minimal-emacs-load-user-init "user/emacs.el")
 (minimal-emacs-load-user-init "user/themes.el")
 (minimal-emacs-load-user-init "user/treesit.el")
+(minimal-emacs-load-user-init "user/completion.el")
 
 (use-package magit
   :ensure t)
-
-(use-package vertico
-  :ensure t
-  :config
-  (vertico-mode))
-
-(use-package orderless
-  :ensure t
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles partial-completion))))
-  (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
 
 (use-package marginalia
   :ensure t
@@ -55,34 +44,19 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-(use-package corfu
-  :ensure t
-  :custom
-  (corfu-cycle nil)
-  (corfu-auto nil)
-  (corfu-auto-prefix 3)
-  (corfu-auto-delay 0.0)
-  (corfu-popupinfo-delay '(0.5 . 0.2))
-  (corfu-preview-current 'insert)
-  (corfu-preselect 'prompt)
-  :bind (:map corfu-map ("M-n" . corfu-complete))
-  :init
-  (global-corfu-mode)
-  (corfu-popupinfo-mode))
-
-(use-package cape
-  :ensure t
-  :init
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-symbol))
-
 (use-package eglot
   :ensure nil
   :custom
   (eglot-completion-at-point-function nil)
   :hook ((python-ts-mode . eglot-ensure)
          (go-ts-mode . eglot-ensure)))
+
+(advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
+
+(setq completion-category-overrides '((eglot (styles orderless))
+                                      (eglot-capf (styles orderless))))
+
+(advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
 
 (use-package pyvenv
   :ensure t)

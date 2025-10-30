@@ -1,5 +1,79 @@
 ;;; user/emacs.el --- Emacs files -*- no-byte-compile: t; lexical-binding: t; -*-
 
+(set-face-attribute 'default nil
+                    :height 200 :weight 'normal :family "Berkeley Mono")
+
+;; When Delete Selection mode is enabled, typed text replaces the selection
+;; if the selection is active.
+(delete-selection-mode 1)
+
+;; Allow Emacs to upgrade built-in packages, such as Org mode
+(setq package-install-upgrade-built-in t)
+
+;; Display of line numbers in the buffer:
+;; (setq-default display-line-numbers-type 'relative)
+(dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
+  (add-hook hook #'display-line-numbers-mode))
+
+;; Display the time in the modeline
+(add-hook 'after-init-hook #'display-time-mode)
+
+;; Paren match highlighting
+(add-hook 'after-init-hook #'show-paren-mode)
+
+;; Track changes in the window configuration, allowing undoing actions such as
+;; closing windows.
+(add-hook 'after-init-hook #'winner-mode)
+
+;; Window dividers separate windows visually. Window dividers are bars that can
+;; be dragged with the mouse, thus allowing you to easily resize adjacent
+;; windows.
+;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Window-Dividers.html
+(add-hook 'after-init-hook #'window-divider-mode)
+
+;; Constrain vertical cursor movement to lines within the buffer
+(setq dired-movement-style 'bounded-files)
+
+;; Dired buffers: Automatically hide file details (permissions, size,
+;; modification date, etc.) and all the files in the `dired-omit-files' regular
+;; expression for a cleaner display.
+(add-hook 'dired-mode-hook #'dired-hide-details-mode)
+
+;; Hide files from dired
+(setq dired-omit-files (concat "\\`[.]\\'"
+                               "\\|\\(?:\\.js\\)?\\.meta\\'"
+                               "\\|\\.\\(?:elc|a\\|o\\|pyc\\|pyo\\|swp\\|class\\)\\'"
+                               "\\|^\\.DS_Store\\'"
+                               "\\|^\\.\\(?:svn\\|git\\)\\'"
+                               "\\|^\\.ccls-cache\\'"
+                               "\\|^__pycache__\\'"
+                               "\\|^\\.project\\(?:ile\\)?\\'"
+                               "\\|^flycheck_.*"
+                               "\\|^flymake_.*"))
+(add-hook 'dired-mode-hook #'dired-omit-mode)
+
+;; dired: Group directories first
+(with-eval-after-load 'dired
+  (let ((args "--group-directories-first -ahlv"))
+    (when (or (eq system-type 'darwin) (eq system-type 'berkeley-unix))
+      (if-let* ((gls (executable-find "gls")))
+          (setq insert-directory-program gls)
+        (setq args nil)))
+    (when args
+      (setq dired-listing-switches args))))
+
+;; Enables visual indication of minibuffer recursion depth after initialization.
+(add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
+
+;; When tooltip-mode is enabled, certain UI elements (e.g., help text,
+;; mouse-hover hints) will appear as native system tooltips (pop-up windows),
+;; rather than as echo area messages. This is useful in graphical Emacs sessions
+;; where tooltips can appear near the cursor.
+(setq tooltip-hide-delay 20)    ; Time in seconds before a tooltip disappears (default: 10)
+(setq tooltip-delay 0.4)        ; Delay before showing a tooltip after mouse hover (default: 0.7)
+(setq tooltip-short-delay 0.08) ; Delay before showing a short tooltip (Default: 0.1)
+(tooltip-mode 1)
+
 ;; Auto-revert in Emacs is a feature that automatically updates the
 ;; contents of a buffer to reflect changes made to the underlying file
 ;; on disk.
@@ -77,89 +151,26 @@
   :custom
   (save-place-limit 400))
 
+(use-package uniquify
+  :ensure nil
+  :custom
+  (uniquify-buffer-name-style 'reverse)
+  (uniquify-separator "•")
+  (uniquify-after-kill-buffer-p t))
+
 (use-package emacs
+  :custom
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (tab-always-indent 'complete)
+  ;; Emacs 30 and newer: Disable Ispell completion function.
+  ;; Try `cape-dict' as an alternative.
+  (text-mode-ispell-word-completion nil)
+  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
+  ;; commands are hidden, since they are not used via M-x. This setting is
+  ;; useful beyond Corfu.
+  (read-extended-command-predicate #'command-completion-default-include-p)
   :config
-  (set-face-attribute 'default nil
-                      :height 200 :weight 'normal :family "Berkeley Mono")
-  
-  ;; When Delete Selection mode is enabled, typed text replaces the selection
-  ;; if the selection is active.
-  (delete-selection-mode 1)
-  
-  ;; Allow Emacs to upgrade built-in packages, such as Org mode
-  (setq package-install-upgrade-built-in t)
-
-  ;; Display of line numbers in the buffer:
-  ;; (setq-default display-line-numbers-type 'relative)
-  (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
-    (add-hook hook #'display-line-numbers-mode))
-
-  ;; Display the time in the modeline
-  (add-hook 'after-init-hook #'display-time-mode)
-
-  ;; Paren match highlighting
-  (add-hook 'after-init-hook #'show-paren-mode)
-
-  ;; Track changes in the window configuration, allowing undoing actions such as
-  ;; closing windows.
-  (add-hook 'after-init-hook #'winner-mode)
-
-  (use-package uniquify
-    :ensure nil
-    :custom
-    (uniquify-buffer-name-style 'reverse)
-    (uniquify-separator "•")
-    (uniquify-after-kill-buffer-p t))
-
-  ;; Window dividers separate windows visually. Window dividers are bars that can
-  ;; be dragged with the mouse, thus allowing you to easily resize adjacent
-  ;; windows.
-  ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Window-Dividers.html
-  (add-hook 'after-init-hook #'window-divider-mode)
-
-  ;; Constrain vertical cursor movement to lines within the buffer
-  (setq dired-movement-style 'bounded-files)
-
-  ;; Dired buffers: Automatically hide file details (permissions, size,
-  ;; modification date, etc.) and all the files in the `dired-omit-files' regular
-  ;; expression for a cleaner display.
-  (add-hook 'dired-mode-hook #'dired-hide-details-mode)
-
-  ;; Hide files from dired
-  (setq dired-omit-files (concat "\\`[.]\\'"
-                                 "\\|\\(?:\\.js\\)?\\.meta\\'"
-                                 "\\|\\.\\(?:elc|a\\|o\\|pyc\\|pyo\\|swp\\|class\\)\\'"
-                                 "\\|^\\.DS_Store\\'"
-                                 "\\|^\\.\\(?:svn\\|git\\)\\'"
-                                 "\\|^\\.ccls-cache\\'"
-                                 "\\|^__pycache__\\'"
-                                 "\\|^\\.project\\(?:ile\\)?\\'"
-                                 "\\|^flycheck_.*"
-                                 "\\|^flymake_.*"))
-  (add-hook 'dired-mode-hook #'dired-omit-mode)
-
-  ;; dired: Group directories first
-  (with-eval-after-load 'dired
-    (let ((args "--group-directories-first -ahlv"))
-      (when (or (eq system-type 'darwin) (eq system-type 'berkeley-unix))
-        (if-let* ((gls (executable-find "gls")))
-            (setq insert-directory-program gls)
-          (setq args nil)))
-      (when args
-        (setq dired-listing-switches args))))
-
-  ;; Enables visual indication of minibuffer recursion depth after initialization.
-  (add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
-
-  ;; When tooltip-mode is enabled, certain UI elements (e.g., help text,
-  ;; mouse-hover hints) will appear as native system tooltips (pop-up windows),
-  ;; rather than as echo area messages. This is useful in graphical Emacs sessions
-  ;; where tooltips can appear near the cursor.
-  (setq tooltip-hide-delay 20)    ; Time in seconds before a tooltip disappears (default: 10)
-  (setq tooltip-delay 0.4)        ; Delay before showing a tooltip after mouse hover (default: 0.7)
-  (setq tooltip-short-delay 0.08) ; Delay before showing a short tooltip (Default: 0.1)
-  (tooltip-mode 1)
-
   (define-minor-mode crnvl96/scroll-center-cursor-mode
     "Toggle centerd cursor scrolling behaviour."
     :init-value nil
