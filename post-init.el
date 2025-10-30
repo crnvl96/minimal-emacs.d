@@ -39,19 +39,27 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-(use-package eglot
-  :ensure nil
+(use-package lsp-mode
+  :ensure t
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  (setq lsp-headerline-breadcrumb-enable nil)
+  (setq lsp-semantic-tokens-enable nil)
+  :hook ((python-ts-mode . lsp)
+         (go-ts-mode . lsp)
+         (lsp-mode . lsp-ui-mode)
+         (lsp-mode . lsp-lens-mode)
+         (lsp-completion-mode . crnvl96/corfu-setup-lsp)) ; Use corfu instead the default for lsp completions
+  :commands lsp
   :custom
-  (eglot-completion-at-point-function nil)
-  :hook ((python-ts-mode . eglot-ensure)
-         (go-ts-mode . eglot-ensure)))
-
-(advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
-
-(setq completion-category-overrides '((eglot (styles orderless))
-                                      (eglot-capf (styles orderless))))
-
-(advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
+  (lsp-completion-provider :none) ; Use corfu instead the default for lsp completions
+  :config
+  ;; Setup lsp to use corfu for lsp completion
+  (defun crnvl96/corfu-setup-lsp ()
+    "Use orderless completion style with lsp-capf instead of the
+    default lsp-passthrough."
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless))))
 
 (use-package pyvenv
   :ensure t)
@@ -69,6 +77,17 @@
   (setf (alist-get 'go-ts-mode apheleia-mode-alist)
         '(gofumpt)))
 
+(use-package flymake-ruff
+  :ensure t
+  :hook (python-ts-mode . flymake-ruff-load))
+
+(use-package lsp-pyright
+  :ensure t)
+
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
+
 (use-package which-key
   :ensure nil
   :commands which-key-mode
@@ -77,7 +96,12 @@
   (which-key-idle-delay 0.5)
   (which-key-idle-secondary-delay 0.25)
   (which-key-add-column-padding 1)
-  (which-key-max-description-length 40))
+  (which-key-max-description-length 40)
+  :config
+  (which-key-add-key-based-replacements
+    "C-x p" "Project"
+    "C-c f" "Consult files"
+    "C-c l" "Consult lines"))
 
 ;; The markdown-mode package provides a major mode for Emacs for syntax
 ;; highlighting, editing commands, and preview support for Markdown documents.
