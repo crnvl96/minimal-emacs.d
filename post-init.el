@@ -269,10 +269,24 @@
   :ensure t
   :custom
   (buffer-terminator-verbose nil)
-  (buffer-terminator-inactivity-timeout (* 10 60)) ;10 minutes
+  (buffer-terminator-inactivity-timeout (* 20 60)) ;20 minutes
   (buffer-terminator-interval (* 10 60)) ; 10 minutes
   :config
   (buffer-terminator-mode 1))
+
+;; Org mode
+(use-package org
+  :ensure t
+  :mode ("\\.org\\'" . org-mode)
+  :bind (:map org-mode-map
+              ("C-c a" . org-agenda)
+              ("C-c c" . org-capture))
+  :config
+  (setq org-log-done 'time)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python . t))))
 
 ;; Local variables:
 ;; byte-compile-warnings: (not obsolete free-vars)
