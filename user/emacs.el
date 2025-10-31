@@ -7,6 +7,9 @@
 ;; if the selection is active.
 (delete-selection-mode 1)
 
+;; Enable current line highlighting
+(global-hl-line-mode 1)
+
 ;; Allow Emacs to upgrade built-in packages, such as Org mode
 (setq package-install-upgrade-built-in t)
 
@@ -186,4 +189,5 @@
                        scroll-margin))
         (kill-local-variable `,local))))
 
-  :bind ("C-c L" . crnvl96/scroll-center-cursor-mode))
+  :bind (("C-c L" . crnvl96/scroll-center-cursor-mode)
+         ("C-6" . (lambda () (interactive) (switch-to-buffer (other-buffer))))))

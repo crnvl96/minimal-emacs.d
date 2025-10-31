@@ -15,7 +15,6 @@
   :init
   (vertico-mode)
   (vertico-mouse-mode)
-  (vertico-indexed-mode)
   :custom
   (vertico-count 13)
   (vertico-resize nil)
@@ -49,34 +48,22 @@
   :ensure t
   :custom
   (corfu-cycle t)
-  (corfu-quit-no-match 'separator)
-  (corfu-quit-at-boundary 'separator)
-  (corfu-preview-current 'insert)
-  (corfu-separator ?\s)
   (corfu-preselect nil)
-  (corfu-auto nil)
-  (corfu-min-width 80)
-  (corfu-max-width corfu-min-width)
-  (corfu-count 8)
-  (corfu-scroll-margin 4)
-  ;; Works with `indent-for-tab-command'. Make sure tab doesn't indent when you
-  ;; want to perform completion
-  (tab-always-indent 'complete)
-  (completion-cycle-threshold nil)
+  (corfu-auto t)
   :bind (:map corfu-map
               ("C-n" . corfu-next)
               ("C-p" . corfu-previous)
               ("<escape>" . corfu-quit)
+              ("C-g" . corfu-quit)
+              ("C-e" . corfu-quit)
               ("RET" . corfu-insert)
               ("C-y" . corfu-insert)
               ("M-d" . corfu-show-documentation)
               ("M-l" . corfu-show-location)
-              ("SPC" . corfu-insert-separator)
-              ("C-o" . corfu-complete)
+              ; ("SPC" . corfu-insert-separator)
               ("C-i" . corfu-quick-complete))
   :init
   (global-corfu-mode)
-  (corfu-indexed-mode)
   (corfu-popupinfo-mode)
   :config
   ;; Enable Corfu more generally for every minibuffer, as long as no other
