@@ -8,10 +8,8 @@
   :config
   (push "/init.el" compile-angel-excluded-files)
   (push "/early-init.el" compile-angel-excluded-files)
-  (push "/pre-init.el" compile-angel-excluded-files)
   (push "/post-init.el" compile-angel-excluded-files)
   (push "/pre-early-init.el" compile-angel-excluded-files)
-  (push "/post-early-init.el" compile-angel-excluded-files)
   (compile-angel-on-load-mode 1))
 
 ;; Core Emacs settings
@@ -28,14 +26,26 @@
   (after-init . savehist-mode)
   :custom
   (text-mode-ispell-word-completion nil)
+  :bind (:map global-map
+              ("C-1" . delete-other-windows)
+              ("C-2" . split-window-below)
+              ("C-3" . split-window-right)
+              ("C-4" . delete-window)
+              ("M-<left>" . windmove-left)
+              ("M-<right>" . windmove-right)
+              ("M-<up>" . windmove-up)
+              ("M-<down>" . windmove-down)
+              ("M-S-<left>" . windmove-swap-states-left)
+              ("M-S-<right>" . windmove-swap-states-right)
+              ("M-S-<up>" . windmove-swap-states-up)
+              ("M-S-<down>" . windmove-swap-states-down))
   :config
   (setq-default display-line-numbers-type 'relative)
   (setq package-install-upgrade-built-in t)
   (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
     (add-hook hook #'display-line-numbers-mode))
   (set-face-attribute 'default nil
-                      :height 200 :weight 'normal :family "Berkeley Mono")
-  :bind (("C-6" . (lambda () (interactive) (switch-to-buffer (other-buffer))))))
+                      :height 200 :weight 'normal :family "Berkeley Mono"))
 
 ;; Themes
 (use-package ef-themes
@@ -55,10 +65,7 @@
   :init
   (vertico-mode)
   :bind (:map vertico-map
-              ("C-j" . vertico-next)
-              ("C-k" . vertico-previous)
-              ("C-w" . vertico-directory-delete-word)
-              ("RET" . vertico-directory-enter)))
+              ("C-w" . vertico-directory-delete-word)))
 
 (use-package orderless
   :ensure t
@@ -112,12 +119,6 @@
               ("=" . magit-section-toggle)))
 
 ;; Search and navigation
-(use-package consult
-  :ensure t
-  :bind (("C-c f l" . consult-line)
-         ("C-c f f" . consult-fd)
-         ("C-c f g" . consult-ripgrep)))
-
 (use-package wgrep
   :ensure t)
 
@@ -129,7 +130,6 @@
    ("C-/" . embark-bindings))
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
-  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
   (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
   :config
   (add-to-list 'display-buffer-alist
@@ -142,28 +142,13 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-(use-package avy
+(use-package consult
   :ensure t
-  :bind (("M-i" . avy-goto-char-2)))
-
-(use-package ace-window
-  :ensure t
-  :init
-  (defvar aw-dispatch-alist
-    '((?c aw-delete-window "Delete Window")
-      (?x aw-swap-window "Swap Windows")
-      (?m aw-move-window "Move Window")
-      (?n aw-flip-window "Flip Window")
-      (?s aw-split-window-vert "Split Vert Window")
-      (?v aw-split-window-horz "Split Horz Window")
-      (?o delete-other-windows "Delete Other Windows")
-      (?? aw-show-dispatch-help))
-    "List of actions for `aw-dispatch-default'.")
-  :custom
-  (aw-dispatch-always t)
-  :config
-  (setq aw-keys '(?h ?l ?j ?k))
-  :bind (("M-o" . ace-window)))
+  :bind (("C-c f l" . consult-line)
+         ("C-c f f" . consult-fd)
+         ("C-c f g" . consult-ripgrep)
+         ("C-5" . consult-project-buffer)
+         ("C-6" . consult-goto-line)))
 
 ;; Language support
 (use-package treesit-auto
@@ -190,12 +175,34 @@
   :custom
   (lsp-completion-provider :none) ; Use corfu instead the default for lsp completions
   :config
-  ;; Setup lsp to use corfu for lsp completion
   (defun crnvl96/corfu-setup-lsp ()
-    "Use orderless completion style with lsp-capf instead of the
+    "Use orderless and corfu completion style with lsp-capf instead of the
                default lsp-passthrough."
     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
           '(orderless))))
+
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode
+  :custom
+  (lsp-ui-doc-show-with-mouse nil))
+
+(use-package lsp-pyright
+  :ensure t)
+
+(use-package flymake-ruff
+  :ensure t
+  :hook (python-ts-mode . flymake-ruff-load))
+
+(use-package apheleia
+  :ensure t
+  :commands (apheleia-mode apheleia-global-mode)
+  :hook ((prog-mode . apheleia-mode))
+  :config
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist)
+        '(ruff-isort ruff))
+  (setf (alist-get 'go-ts-mode apheleia-mode-alist)
+        '(gofumpt)))
 
 (use-package pyvenv
   :ensure t)
@@ -215,28 +222,6 @@
   (:map markdown-mode-map
         ("C-c C-e" . markdown-do)))
 
-(use-package apheleia
-  :ensure t
-  :commands (apheleia-mode apheleia-global-mode)
-  :hook ((prog-mode . apheleia-mode))
-  :config
-  (setf (alist-get 'python-ts-mode apheleia-mode-alist)
-        '(ruff-isort ruff))
-  (setf (alist-get 'go-ts-mode apheleia-mode-alist)
-        '(gofumpt)))
-
-(use-package flymake-ruff
-  :ensure t
-  :hook (python-ts-mode . flymake-ruff-load))
-
-(use-package lsp-pyright
-  :ensure t)
-
-(use-package lsp-ui
-  :ensure t
-  :commands lsp-ui-mode
-  :custom
-  (lsp-ui-doc-show-with-mouse nil))
 
 ;; Utilities
 (use-package which-key
@@ -252,11 +237,6 @@
   (which-key-add-key-based-replacements
     "C-x p" "Project"
     "C-c ." "LSP"))
-
-(use-package exec-path-from-shell
-  :ensure t
-  :config
-  (exec-path-from-shell-initialize))
 
 (use-package undo-fu
   :ensure t
@@ -275,9 +255,6 @@
   :commands undo-fu-session-global-mode
   :hook (after-init . undo-fu-session-global-mode))
 
-(use-package eat
-  :ensure t)
-
 (use-package buffer-terminator
   :ensure t
   :custom
@@ -286,25 +263,6 @@
   (buffer-terminator-interval (* 10 60)) ; 10 minutes
   :config
   (buffer-terminator-mode 1))
-
-;; Helpful is an alternative to the built-in Emacs help that provides much more
-;; contextual information.
-(use-package helpful
-  :ensure t
-  :commands (helpful-callable
-             helpful-variable
-             helpful-key
-             helpful-command
-             helpful-at-point
-             helpful-function)
-  :bind
-  ([remap describe-command] . helpful-command)
-  ([remap describe-function] . helpful-callable)
-  ([remap describe-key] . helpful-key)
-  ([remap describe-symbol] . helpful-symbol)
-  ([remap describe-variable] . helpful-variable)
-  :custom
-  (helpful-max-buffers 7))
 
 ;; Local variables:
 ;; byte-compile-warnings: (not obsolete free-vars)
