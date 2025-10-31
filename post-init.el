@@ -10,6 +10,7 @@
   (push "/early-init.el" compile-angel-excluded-files)
   (push "/post-init.el" compile-angel-excluded-files)
   (push "/pre-early-init.el" compile-angel-excluded-files)
+  (push "/post-early-init.el" compile-angel-excluded-files)
   (compile-angel-on-load-mode 1))
 
 ;; Core Emacs settings
@@ -28,8 +29,8 @@
   (text-mode-ispell-word-completion nil)
   :bind (:map global-map
               ("C-1" . delete-other-windows)
-              ("C-2" . split-window-below)
-              ("C-3" . split-window-right)
+              ("C-2" . split-window-right)
+              ("C-3" . split-window-below)
               ("C-4" . delete-window)
               ("M-<left>" . windmove-left)
               ("M-<right>" . windmove-right)
@@ -40,6 +41,7 @@
               ("M-S-<up>" . windmove-swap-states-up)
               ("M-S-<down>" . windmove-swap-states-down))
   :config
+  (define-key key-translation-map (kbd "C-o") (kbd "C-p"))
   (setq-default display-line-numbers-type 'relative)
   (setq package-install-upgrade-built-in t)
   (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
@@ -48,11 +50,19 @@
                       :height 200 :weight 'normal :family "Berkeley Mono"))
 
 ;; Themes
+(use-package modus-themes
+  :ensure t)
+
 (use-package ef-themes
-  :ensure t
-  :demand t
-  :init
-  (load-theme 'ef-melissa-light t))
+  :ensure t)
+
+(use-package standard-themes
+  :ensure t)
+
+(use-package doric-themes
+  :ensure t)
+
+(load-theme 'modus-vivendi-tritanopia t)
 
 ;; Completion system
 (use-package marginalia
@@ -70,11 +80,10 @@
 (use-package orderless
   :ensure t
   :custom
-  (orderless-style-dispatchers '(orderless-affix-dispatch))
-  (orderless-component-separator #'orderless-escapable-split-on-space)
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles partial-completion))))
-  (completion-category-defaults nil))
+  (orderless-matching-styles '(orderless-literal orderless-regexp orderless-flex))
+  (completion-styles '(orderless partial-completion basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package corfu
   :ensure t
@@ -86,6 +95,7 @@
               ("C-n" . corfu-next)
               ("C-p" . corfu-previous)
               ("<escape>" . corfu-quit)
+              ("C-i" . corfu-complete)
               ("C-g" . corfu-quit)
               ("C-e" . corfu-quit)
               ("RET" . corfu-insert)
@@ -95,8 +105,8 @@
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode)
-  :config
-  (defun corfu-enable-always-in-minibuffer () ;; https://github.com/minad/corfu#completing-with-corfu-in-the-minibuffer
+  :config 
+  (defun corfu-enable-always-in-minibuffer ()
     "Enable Corfu in the minibuffer if Vertico/Mct are not active."
     (unless (or (bound-and-true-p mct--active)
                 (bound-and-true-p vertico--input))
@@ -147,8 +157,9 @@
   :bind (("C-c f l" . consult-line)
          ("C-c f f" . consult-fd)
          ("C-c f g" . consult-ripgrep)
-         ("C-5" . consult-project-buffer)
-         ("C-6" . consult-goto-line)))
+         ("C-5" . consult-goto-line)
+         ("C-6" . consult-project-buffer)))
+
 
 ;; Language support
 (use-package treesit-auto
@@ -156,7 +167,6 @@
   (treesit-auto-install 'prompt)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
-  (setq treesit-font-lock-level 4)
   (global-treesit-auto-mode))
 
 (use-package lsp-mode

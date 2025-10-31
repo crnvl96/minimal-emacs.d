@@ -1,5 +1,7 @@
 ;;; pre-early-init.el --- Pre Early Init -*- no-byte-compile: t; lexical-binding: t; -*-
 
+(setq minimal-emacs-gc-cons-threshold (* 64 1024 1024))
+
 (defun display-startup-time ()
   "Display the startup time and number of garbage collections."
   (message "Emacs init loaded in %.2f seconds (Full emacs-startup: %.2fs) with %d garbage collections."
