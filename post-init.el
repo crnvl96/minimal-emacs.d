@@ -225,16 +225,16 @@
   (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t))
 
-; (use-package ace-window
-;   :ensure t
-;   :config
-;   (global-set-key (kbd "M-o") 'ace-window))
-;
-; (use-package avy
-;   :ensure t
-;   :config
-;   (global-set-key (kbd "M-l") 'avy-goto-line)
-;   (global-set-key (kbd "M-k") 'avy-goto-word-1))
+;; (use-package ace-window
+;;   :ensure t
+;;   :config
+;;   (global-set-key (kbd "M-o") 'ace-window))
+;;
+;; (use-package avy
+;;   :ensure t
+;;   :config
+;;   (global-set-key (kbd "M-l") 'avy-goto-line)
+;;   (global-set-key (kbd "M-k") 'avy-goto-word-1))
 
 (setq evil-undo-system 'undo-fu)
 
@@ -246,6 +246,7 @@
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
   :custom
+  (evil-want-C-u-scroll t)
   (evil-ex-visual-char-range t)
   (evil-ex-search-vim-style-regexp t)
   (evil-split-window-below t)
