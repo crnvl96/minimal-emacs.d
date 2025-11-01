@@ -233,48 +233,105 @@
   (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t))
 
-;; Evil Mode
-(setq evil-undo-system 'undo-fu)
-
-(use-package evil
-  :ensure t
-  :commands (evil-mode evil-define-key)
-  :hook (after-init . evil-mode)
+;; Meow Mode
+(use-package meow
   :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  :custom
-  (evil-ex-visual-char-range t)
-  (evil-ex-search-vim-style-regexp t)
-  (evil-split-window-below t)
-  (evil-vsplit-window-right t)
-  (evil-echo-state nil)
-  (evil-move-cursor-back nil)
-  (evil-v$-excludes-newline t)
-  (evil-want-C-h-delete t)
-  (evil-want-C-u-delete t)
-  (evil-want-fine-undo t)
-  (evil-move-beyond-eol t)
-  (evil-search-wrap nil)
-  (evil-want-Y-yank-to-eol t))
-
-(use-package evil-collection
-  :after evil
-  :ensure t
-  :init
-  (setq evil-collection-setup-minibuffer t)
+  (defun meow-setup ()
+    (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+    (meow-motion-define-key
+     '("j" . meow-next)
+     '("k" . meow-prev)
+     '("<escape>" . ignore))
+    (meow-leader-define-key
+     ;; Use SPC (0-9) for digit arguments.
+     '("1" . meow-digit-argument)
+     '("2" . meow-digit-argument)
+     '("3" . meow-digit-argument)
+     '("4" . meow-digit-argument)
+     '("5" . meow-digit-argument)
+     '("6" . meow-digit-argument)
+     '("7" . meow-digit-argument)
+     '("8" . meow-digit-argument)
+     '("9" . meow-digit-argument)
+     '("0" . meow-digit-argument)
+     '("/" . meow-keypad-describe-key)
+     '("?" . meow-cheatsheet))
+    (meow-normal-define-key
+     '("0" . meow-expand-0)
+     '("9" . meow-expand-9)
+     '("8" . meow-expand-8)
+     '("7" . meow-expand-7)
+     '("6" . meow-expand-6)
+     '("5" . meow-expand-5)
+     '("4" . meow-expand-4)
+     '("3" . meow-expand-3)
+     '("2" . meow-expand-2)
+     '("1" . meow-expand-1)
+     '("-" . negative-argument)
+     '(";" . meow-reverse)
+     '("," . meow-inner-of-thing)
+     '("." . meow-bounds-of-thing)
+     '("[" . meow-beginning-of-thing)
+     '("]" . meow-end-of-thing)
+     '("a" . meow-append)
+     '("A" . meow-open-below)
+     '("b" . meow-back-word)
+     '("B" . meow-back-symbol)
+     '("c" . meow-change)
+     '("d" . meow-delete)
+     '("D" . meow-backward-delete)
+     '("e" . meow-next-word)
+     '("E" . meow-next-symbol)
+     '("f" . meow-find)
+     '("g" . meow-cancel-selection)
+     '("G" . meow-grab)
+     '("h" . meow-left)
+     '("H" . meow-left-expand)
+     '("i" . meow-insert)
+     '("I" . meow-open-above)
+     '("j" . meow-next)
+     '("J" . meow-next-expand)
+     '("k" . meow-prev)
+     '("K" . meow-prev-expand)
+     '("l" . meow-right)
+     '("L" . meow-right-expand)
+     '("m" . meow-join)
+     '("n" . meow-search)
+     '("o" . meow-block)
+     '("O" . meow-to-block)
+     '("p" . meow-yank)
+     '("q" . meow-quit)
+     '("Q" . meow-goto-line)
+     '("r" . meow-replace)
+     '("R" . meow-swap-grab)
+     '("s" . meow-kill)
+     '("t" . meow-till)
+     '("u" . meow-undo)
+     '("U" . meow-undo-in-selection)
+     '("v" . meow-visit)
+     '("w" . meow-mark-word)
+     '("W" . meow-mark-symbol)
+     '("x" . meow-line)
+     '("X" . meow-goto-line)
+     '("y" . meow-save)
+     '("Y" . meow-sync-grab)
+     '("z" . meow-pop-selection)
+     '("'" . repeat)
+     '("<escape>" . ignore)))
   :config
-  (evil-collection-init))
+  (meow-setup)
+  (meow-global-mode 1))
 
-;; The following code enables commenting and uncommenting by pressing gcc in
-;; normal mode and gc in visual mode.
-(with-eval-after-load "evil"
-  (evil-define-operator my-evil-comment-or-uncomment (beg end)
-    "Toggle comment for the region between BEG and END."
-    (interactive "<r>")
-    (comment-or-uncomment-region beg end))
-  (evil-define-key 'normal 'global (kbd "gc") 'my-evil-comment-or-uncomment))
+(use-package ace-window
+  :ensure t
+  :config
+  (global-set-key (kbd "M-o") 'ace-window))
 
+(use-package avy
+  :ensure t
+  :config
+  (global-set-key (kbd "M-g l") 'avy-goto-line)
+  (global-set-key (kbd "M-g w") 'avy-goto-word-1))
 
 ;; Utilities
 (use-package which-key
