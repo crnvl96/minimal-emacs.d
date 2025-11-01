@@ -313,6 +313,12 @@
   (meow-setup)
   (meow-global-mode 1))
 
+(use-package meow-tree-sitter
+  :ensure t
+  :after (meow)
+  :init
+  (meow-tree-sitter-register-defaults))
+
 (use-package ace-window
   :ensure t
   :config
