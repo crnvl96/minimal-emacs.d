@@ -59,9 +59,7 @@
 (use-package vertico
   :ensure t
   :init
-  (vertico-mode)
-  :bind (:map vertico-map
-              ("C-w" . vertico-directory-delete-word)))
+  (vertico-mode))
 
 (use-package orderless
   :ensure t
@@ -109,10 +107,7 @@
 
 ;; Version control
 (use-package magit
-  :ensure t
-  :bind (:map magit-mode-map
-              ("<tab>" . nil)
-              ("=" . magit-section-toggle)))
+  :ensure t)
 
 ;; Search and navigation
 (use-package wgrep
@@ -143,8 +138,8 @@
   :bind (("C-c f l" . consult-line)
          ("C-c f f" . consult-fd)
          ("C-c f g" . consult-ripgrep)
-         ("C-5" . consult-goto-line)
-         ("C-6" . consult-project-buffer)))
+         ("C-c f L" . consult-goto-line)
+         ("C-c f b" . consult-project-buffer)))
 
 ;; Language support
 (use-package treesit-auto
@@ -212,10 +207,7 @@
              markdown-view-mode)
   :mode (("\\.markdown\\'" . markdown-mode)
          ("\\.md\\'" . markdown-mode)
-         ("README\\.md\\'" . gfm-mode))
-  :bind
-  (:map markdown-mode-map
-        ("C-c C-e" . markdown-do)))
+         ("README\\.md\\'" . gfm-mode)))
 
 (use-package org
   :ensure t
@@ -243,7 +235,6 @@
      '("k" . meow-prev)
      '("<escape>" . ignore))
     (meow-leader-define-key
-     ;; Use SPC (0-9) for digit arguments.
      '("1" . meow-digit-argument)
      '("2" . meow-digit-argument)
      '("3" . meow-digit-argument)
@@ -330,8 +321,8 @@
 (use-package avy
   :ensure t
   :config
-  (global-set-key (kbd "M-g l") 'avy-goto-line)
-  (global-set-key (kbd "M-g w") 'avy-goto-word-1))
+  (global-set-key (kbd "M-l") 'avy-goto-line)
+  (global-set-key (kbd "M-k") 'avy-goto-word-1))
 
 ;; Utilities
 (use-package which-key
@@ -373,20 +364,6 @@
   (buffer-terminator-interval (* 10 60)) ; 10 minutes
   :config
   (buffer-terminator-mode 1))
-
-;; Org mode
-(use-package org
-  :ensure t
-  :mode ("\\.org\\'" . org-mode)
-  :bind (:map org-mode-map
-              ("C-c a" . org-agenda)
-              ("C-c c" . org-capture))
-  :config
-  (setq org-log-done 'time)
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (python . t))))
 
 ;; Local variables:
 ;; byte-compile-warnings: (not obsolete free-vars)
