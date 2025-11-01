@@ -48,7 +48,7 @@
 (use-package doric-themes
   :ensure t)
 
-(load-theme 'modus-vivendi t)
+(load-theme 'ef-owl t)
 
 ;; Completion system
 (use-package marginalia
