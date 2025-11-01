@@ -225,56 +225,56 @@
   (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t))
 
-;; (use-package ace-window
-;;   :ensure t
-;;   :config
-;;   (global-set-key (kbd "M-o") 'ace-window))
-;;
-;; (use-package avy
-;;   :ensure t
-;;   :config
-;;   (global-set-key (kbd "M-l") 'avy-goto-line)
-;;   (global-set-key (kbd "M-k") 'avy-goto-word-1))
-
-(setq evil-undo-system 'undo-fu)
-
-(use-package evil
+(use-package ace-window
   :ensure t
-  :commands (evil-mode evil-define-key)
-  :hook (after-init . evil-mode)
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  :custom
-  (evil-want-C-u-scroll t)
-  (evil-ex-visual-char-range t)
-  (evil-ex-search-vim-style-regexp t)
-  (evil-split-window-below t)
-  (evil-vsplit-window-right t)
-  (evil-echo-state nil)
-  (evil-move-cursor-back nil)
-  (evil-v$-excludes-newline t)
-  (evil-want-C-h-delete t)
-  (evil-want-C-u-delete t)
-  (evil-want-fine-undo t)
-  (evil-move-beyond-eol t)
-  (evil-search-wrap nil)
-  (evil-want-Y-yank-to-eol t))
-
-(use-package evil-collection
-  :after evil
-  :ensure t
-  :init
-  (setq evil-collection-setup-minibuffer t)
   :config
-  (evil-collection-init))
+  (global-set-key (kbd "M-o") 'ace-window))
 
-(with-eval-after-load "evil"
-  (evil-define-operator my-evil-comment-or-uncomment (beg end)
-    "Toggle comment for the region between BEG and END."
-    (interactive "<r>")
-    (comment-or-uncomment-region beg end))
-  (evil-define-key 'normal 'global (kbd "gc") 'my-evil-comment-or-uncomment))
+(use-package avy
+  :ensure t
+  :config
+  (global-set-key (kbd "M-l") 'avy-goto-line)
+  (global-set-key (kbd "M-k") 'avy-goto-word-1))
+
+;; (setq evil-undo-system 'undo-fu)
+;;
+;; (use-package evil
+;;   :ensure t
+;;   :commands (evil-mode evil-define-key)
+;;   :hook (after-init . evil-mode)
+;;   :init
+;;   (setq evil-want-integration t)
+;;   (setq evil-want-keybinding nil)
+;;   :custom
+;;   (evil-want-C-u-scroll t)
+;;   (evil-ex-visual-char-range t)
+;;   (evil-ex-search-vim-style-regexp t)
+;;   (evil-split-window-below t)
+;;   (evil-vsplit-window-right t)
+;;   (evil-echo-state nil)
+;;   (evil-move-cursor-back nil)
+;;   (evil-v$-excludes-newline t)
+;;   (evil-want-C-h-delete t)
+;;   (evil-want-C-u-delete t)
+;;   (evil-want-fine-undo t)
+;;   (evil-move-beyond-eol t)
+;;   (evil-search-wrap nil)
+;;   (evil-want-Y-yank-to-eol t))
+;;
+;; (use-package evil-collection
+;;   :after evil
+;;   :ensure t
+;;   :init
+;;   (setq evil-collection-setup-minibuffer t)
+;;   :config
+;;   (evil-collection-init))
+;;
+;; (with-eval-after-load "evil"
+;;   (evil-define-operator my-evil-comment-or-uncomment (beg end)
+;;                         "Toggle comment for the region between BEG and END."
+;;                         (interactive "<r>")
+;;                         (comment-or-uncomment-region beg end))
+;;   (evil-define-key 'normal 'global (kbd "gc") 'my-evil-comment-or-uncomment))
 
 ;; Utilities
 (use-package which-key
