@@ -146,16 +146,6 @@
          ("C-5" . consult-goto-line)
          ("C-6" . consult-project-buffer)))
 
-(use-package avy
-             :ensure t
-             :config
-             (global-set-key (kbd "C-d") 'avy-goto-char))
-
-(use-package ace-window
-             :ensure t
-             :config
-             (global-set-key (kbd "M-o") 'ace-window))
-
 ;; Language support
 (use-package treesit-auto
   :custom
@@ -226,6 +216,64 @@
   :bind
   (:map markdown-mode-map
         ("C-c C-e" . markdown-do)))
+
+(use-package org
+  :ensure t
+  :commands (org-mode org-version)
+  :mode
+  ("\\.org\\'" . org-mode)
+  :custom
+  (org-hide-leading-stars t)
+  (org-startup-indented t)
+  (org-adapt-indentation nil)
+  (org-edit-src-content-indentation 0)
+  (org-fontify-done-headline t)
+  (org-fontify-todo-headline t)
+  (org-fontify-whole-heading-line t)
+  (org-fontify-quote-and-verse-blocks t)
+  (org-startup-truncated t))
+
+;; Evil Mode
+(setq evil-undo-system 'undo-fu)
+
+(use-package evil
+  :ensure t
+  :commands (evil-mode evil-define-key)
+  :hook (after-init . evil-mode)
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  :custom
+  (evil-ex-visual-char-range t)
+  (evil-ex-search-vim-style-regexp t)
+  (evil-split-window-below t)
+  (evil-vsplit-window-right t)
+  (evil-echo-state nil)
+  (evil-move-cursor-back nil)
+  (evil-v$-excludes-newline t)
+  (evil-want-C-h-delete t)
+  (evil-want-C-u-delete t)
+  (evil-want-fine-undo t)
+  (evil-move-beyond-eol t)
+  (evil-search-wrap nil)
+  (evil-want-Y-yank-to-eol t))
+
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :init
+  (setq evil-collection-setup-minibuffer t)
+  :config
+  (evil-collection-init))
+
+;; The following code enables commenting and uncommenting by pressing gcc in
+;; normal mode and gc in visual mode.
+(with-eval-after-load "evil"
+  (evil-define-operator my-evil-comment-or-uncomment (beg end)
+    "Toggle comment for the region between BEG and END."
+    (interactive "<r>")
+    (comment-or-uncomment-region beg end))
+  (evil-define-key 'normal 'global (kbd "gc") 'my-evil-comment-or-uncomment))
 
 
 ;; Utilities
