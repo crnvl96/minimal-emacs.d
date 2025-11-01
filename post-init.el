@@ -27,21 +27,7 @@
   (after-init . savehist-mode)
   :custom
   (text-mode-ispell-word-completion nil)
-  :bind (:map global-map
-              ("C-1" . delete-other-windows)
-              ("C-2" . split-window-right)
-              ("C-3" . split-window-below)
-              ("C-4" . delete-window)
-              ("M-<left>" . windmove-left)
-              ("M-<right>" . windmove-right)
-              ("M-<up>" . windmove-up)
-              ("M-<down>" . windmove-down)
-              ("M-S-<left>" . windmove-swap-states-left)
-              ("M-S-<right>" . windmove-swap-states-right)
-              ("M-S-<up>" . windmove-swap-states-up)
-              ("M-S-<down>" . windmove-swap-states-down))
   :config
-  (define-key key-translation-map (kbd "C-o") (kbd "C-p"))
   (setq-default display-line-numbers-type 'relative)
   (setq package-install-upgrade-built-in t)
   (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
@@ -62,7 +48,7 @@
 (use-package doric-themes
   :ensure t)
 
-(load-theme 'modus-vivendi-tritanopia t)
+(load-theme 'modus-vivendi t)
 
 ;; Completion system
 (use-package marginalia
@@ -105,7 +91,7 @@
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode)
-  :config 
+  :config
   (defun corfu-enable-always-in-minibuffer ()
     "Enable Corfu in the minibuffer if Vertico/Mct are not active."
     (unless (or (bound-and-true-p mct--active)
@@ -160,6 +146,15 @@
          ("C-5" . consult-goto-line)
          ("C-6" . consult-project-buffer)))
 
+(use-package avy
+             :ensure t
+             :config
+             (global-set-key (kbd "C-d") 'avy-goto-char))
+
+(use-package ace-window
+             :ensure t
+             :config
+             (global-set-key (kbd "M-o") 'ace-window))
 
 ;; Language support
 (use-package treesit-auto
