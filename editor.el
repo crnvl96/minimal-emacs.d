@@ -11,6 +11,16 @@
   :init
   (vertico-mode))
 
+(use-package expand-region
+  :bind ("C-=" . er/expand-region))
+
+(use-package multiple-cursors
+  :ensure t
+  :bind (("C->" . mc/mark-next-like-this)
+         ("C-<" . mc/mark-previous-like-this)
+         ("C-c C-<" . mc/mark-all-like-this)
+         ("C-S-c C-S-c" . mc/edit-lines)))
+
 (use-package orderless
   :ensure t
   :custom
