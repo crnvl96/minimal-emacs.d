@@ -34,7 +34,9 @@
   (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
     (add-hook hook #'display-line-numbers-mode))
   (set-face-attribute 'default nil
-                      :height 200 :weight 'normal :family "Berkeley Mono"))
+                      :height 200 :weight 'normal :family "Berkeley Mono")
+  :bind(("M-n" . forward-paragraph)
+        ("M-p". backward-paragraph)))
 
 (use-package modus-themes
   :ensure t)
@@ -273,6 +275,19 @@
   :config
   (keymap-set typst-ts-mode-map "C-c C-c" #'typst-ts-tmenu))
 
+(use-package multiple-cursors
+  :ensure t
+  :bind (("C->" . mc/mark-next-like-this)
+         ("C-<" . mc/mark-previous-like-this)))
+
+(use-package expand-region
+  :ensure t
+  :bind (("C-=" . er/expand-region)))
+
+(use-package ace-window
+  :ensure t
+  :bind (("M-i" . avy-goto-char-2)))
+
 (use-package ace-window
   :ensure t
   :config
@@ -284,46 +299,6 @@
   (zoom-size '(0.618 . 0.618))
   :config
   (zoom-mode t))
-
-;; Evil mode
-;; (use-package evil
-;;   :ensure t
-;;   :commands (evil-mode evil-define-key)
-;;   :hook (after-init . evil-mode)
-;;   :init
-;;   (setq evil-want-integration t)
-;;   (setq evil-want-keybinding nil)
-;;   (setq evil-undo-system 'undo-fu)
-;;   :custom
-;;   (evil-want-C-u-scroll t)
-;;   (evil-ex-visual-char-range t)
-;;   (evil-ex-search-vim-style-regexp t)
-;;   (evil-split-window-below t)
-;;   (evil-vsplit-window-right t)
-;;   (evil-echo-state nil)
-;;   (evil-move-cursor-back nil)
-;;   (evil-v$-excludes-newline t)
-;;   (evil-want-C-h-delete t)
-;;   (evil-want-C-u-delete t)
-;;   (evil-want-fine-undo t)
-;;   (evil-move-beyond-eol t)
-;;   (evil-search-wrap nil)
-;;   (evil-want-Y-yank-to-eol t)
-;;   :config
-;;   (with-eval-after-load "evil"
-;;     (evil-define-operator evil-comment-or-uncomment (beg end)
-;;       "Toggle comment for the region between BEG and END."
-;;       (interactive "<r>")
-;;       (comment-or-uncomment-region beg end))
-;;     (evil-define-key 'normal 'global (kbd "gc") 'evil-comment-or-uncomment)))
-;;
-;; (use-package evil-collection
-;;   :after evil
-;;   :ensure t
-;;   :init
-;;   (setq evil-collection-setup-minibuffer t)
-;;   :config
-;;   (evil-collection-init))
 
 ;; Utilities
 (use-package which-key
@@ -348,5 +323,9 @@
   (buffer-terminator-interval (* 10 60)) ; 10 minutes
   :config
   (buffer-terminator-mode 1))
+
+;; Local variables:
+;; byte-compile-warnings: (not obsolete free-vars)
+;; End:
 
 ;;; post-init.el ends here
