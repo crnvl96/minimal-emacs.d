@@ -13,9 +13,91 @@
   (push "/post-early-init.el" compile-angel-excluded-files)
   (compile-angel-on-load-mode 1))
 
-(load-file "~/.emacs.d/core.el")
-(load-file "~/.emacs.d/themes.el")
-(load-file "~/.emacs.d/editor.el")
+(use-package emacs
+  :init
+  (delete-selection-mode 1)
+  (global-hl-line-mode 1)
+  :hook
+  (after-init . display-time-mode)
+  (after-init . show-paren-mode)
+  (after-init . global-auto-revert-mode)
+  (after-init . recentf-mode)
+  (after-init . save-place-mode)
+  (after-init . savehist-mode)
+  :custom
+  (text-mode-ispell-word-completion nil)
+  :config
+  (setq scroll-margin 8)
+  (setq hscroll-margin 16)
+  (setq-default display-line-numbers-type 'relative)
+  (setq package-install-upgrade-built-in t)
+  (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
+    (add-hook hook #'display-line-numbers-mode))
+  (set-face-attribute 'default nil
+                      :height 200 :weight 'normal :family "Berkeley Mono"))
+
+(use-package modus-themes
+  :ensure t)
+
+(use-package ef-themes
+  :ensure t)
+
+(use-package standard-themes
+  :ensure t)
+
+(use-package doric-themes
+  :ensure t)
+
+(load-theme 'standard-light-tinted t)
+
+(use-package marginalia
+  :ensure t
+  :init
+  (marginalia-mode))
+
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode))
+
+(use-package expand-region
+  :bind ("C-=" . er/expand-region))
+
+(use-package multiple-cursors
+  :ensure t
+  :bind (("C->" . mc/mark-next-like-this)
+         ("C-<" . mc/mark-previous-like-this)
+         ("C-c C-<" . mc/mark-all-like-this)
+         ("C-S-c C-S-c" . mc/edit-lines)))
+
+(use-package orderless
+  :ensure t
+  :custom
+  (orderless-matching-styles '(orderless-literal orderless-regexp orderless-flex))
+  (completion-styles '(orderless partial-completion basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles partial-completion)))))
+
+;; Version control
+(use-package magit
+  :ensure t)
+
+(use-package undo-fu
+  :ensure t
+  :demand t
+  :commands (undo-fu-only-undo
+             undo-fu-only-redo
+             undo-fu-only-redo-all
+             undo-fu-disable-checkpoint)
+  :config
+  (global-unset-key (kbd "C-z"))
+  :bind (("C-z" . undo-fu-only-undo)
+         ("C-S-z" . undo-fu-only-redo)))
+
+(use-package undo-fu-session
+  :ensure t
+  :commands undo-fu-session-global-mode
+  :hook (after-init . undo-fu-session-global-mode))
 
 (use-package corfu
   :ensure t
