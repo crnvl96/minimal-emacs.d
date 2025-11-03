@@ -13,63 +13,9 @@
   (push "/post-early-init.el" compile-angel-excluded-files)
   (compile-angel-on-load-mode 1))
 
-;; Core Emacs settings
-(use-package emacs
-  :init
-  (delete-selection-mode 1)
-  (global-hl-line-mode 1)
-  :hook
-  (after-init . display-time-mode)
-  (after-init . show-paren-mode)
-  (after-init . global-auto-revert-mode)
-  (after-init . recentf-mode)
-  (after-init . save-place-mode)
-  (after-init . savehist-mode)
-  :custom
-  (text-mode-ispell-word-completion nil)
-  :config
-  (setq scroll-margin 8)
-  (setq hscroll-margin 16)
-  (setq-default display-line-numbers-type 'relative)
-  (setq package-install-upgrade-built-in t)
-  (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
-    (add-hook hook #'display-line-numbers-mode))
-  (set-face-attribute 'default nil
-                      :height 200 :weight 'normal :family "Berkeley Mono"))
-
-;; Themes
-(use-package modus-themes
-  :ensure t)
-
-(use-package ef-themes
-  :ensure t)
-
-(use-package standard-themes
-  :ensure t)
-
-(use-package doric-themes
-  :ensure t)
-
-(load-theme 'ef-owl t)
-
-;; Completion system
-(use-package marginalia
-  :ensure t
-  :init
-  (marginalia-mode))
-
-(use-package vertico
-  :ensure t
-  :init
-  (vertico-mode))
-
-(use-package orderless
-  :ensure t
-  :custom
-  (orderless-matching-styles '(orderless-literal orderless-regexp orderless-flex))
-  (completion-styles '(orderless partial-completion basic))
-  (completion-category-defaults nil)
-  (completion-category-overrides '((file (styles partial-completion)))))
+(load-file "~/.emacs.d/core.el")
+(load-file "~/.emacs.d/themes.el")
+(load-file "~/.emacs.d/editor.el")
 
 (use-package corfu
   :ensure t
@@ -106,10 +52,6 @@
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
   (add-to-list 'completion-at-point-functions #'cape-elisp-symbol))
-
-;; Version control
-(use-package magit
-  :ensure t)
 
 ;; Search and navigation
 (use-package wgrep
@@ -315,19 +257,6 @@
   (which-key-add-key-based-replacements
     "C-x p" "Project"
     "C-c ." "LSP"))
-
-(use-package undo-fu
-  :ensure t
-  :demand t
-  :commands (undo-fu-only-undo
-             undo-fu-only-redo
-             undo-fu-only-redo-all
-             undo-fu-disable-checkpoint))
-
-(use-package undo-fu-session
-  :ensure t
-  :commands undo-fu-session-global-mode
-  :hook (after-init . undo-fu-session-global-mode))
 
 (use-package buffer-terminator
   :ensure t
