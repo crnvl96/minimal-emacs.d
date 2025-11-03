@@ -28,6 +28,8 @@
   :custom
   (text-mode-ispell-word-completion nil)
   :config
+  (setq scroll-margin 8)
+  (setq hscroll-margin 16)
   (setq-default display-line-numbers-type 'relative)
   (setq package-install-upgrade-built-in t)
   (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
@@ -149,6 +151,18 @@
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
 
+(setq typst-tsauto-config
+      (make-treesit-auto-recipe
+       :lang 'typst
+       :ts-mode 'typ-ts-mode
+       :remap '(typst-mode)
+       :url "https://github.com/uben0/tree-sitter-typst"
+       :revision "master"
+       :source-dir "src"
+       :ext "\\.typ\\'"))
+
+(add-to-list 'treesit-auto-recipe-list typst-tsauto-config)
+
 (use-package lsp-mode
   :ensure t
   :init
@@ -225,19 +239,29 @@
   (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t))
 
+(use-package typst-ts-mode
+  :ensure t
+  :init
+  (add-to-list 'auto-mode-alist '("\\.typ\\'" . typst-ts-mode))
+  :custom
+  (typst-ts-watch-options "--open")
+  (typst-ts-mode-enable-raw-blocks-highlight t)
+  :config
+  (keymap-set typst-ts-mode-map "C-c C-c" #'typst-ts-tmenu))
+
 (use-package ace-window
   :ensure t
   :config
   (global-set-key (kbd "M-o") 'ace-window))
 
-(use-package avy
+(use-package zoom
   :ensure t
+  :custom
+  (zoom-size '(0.618 . 0.618))
   :config
-  (global-set-key (kbd "M-l") 'avy-goto-line)
-  (global-set-key (kbd "M-k") 'avy-goto-word-1))
+  (zoom-mode t))
 
-;; (setq evil-undo-system 'undo-fu)
-;;
+;; Evil mode
 ;; (use-package evil
 ;;   :ensure t
 ;;   :commands (evil-mode evil-define-key)
@@ -245,6 +269,7 @@
 ;;   :init
 ;;   (setq evil-want-integration t)
 ;;   (setq evil-want-keybinding nil)
+;;   (setq evil-undo-system 'undo-fu)
 ;;   :custom
 ;;   (evil-want-C-u-scroll t)
 ;;   (evil-ex-visual-char-range t)
@@ -259,7 +284,14 @@
 ;;   (evil-want-fine-undo t)
 ;;   (evil-move-beyond-eol t)
 ;;   (evil-search-wrap nil)
-;;   (evil-want-Y-yank-to-eol t))
+;;   (evil-want-Y-yank-to-eol t)
+;;   :config
+;;   (with-eval-after-load "evil"
+;;     (evil-define-operator evil-comment-or-uncomment (beg end)
+;;       "Toggle comment for the region between BEG and END."
+;;       (interactive "<r>")
+;;       (comment-or-uncomment-region beg end))
+;;     (evil-define-key 'normal 'global (kbd "gc") 'evil-comment-or-uncomment)))
 ;;
 ;; (use-package evil-collection
 ;;   :after evil
@@ -268,13 +300,6 @@
 ;;   (setq evil-collection-setup-minibuffer t)
 ;;   :config
 ;;   (evil-collection-init))
-;;
-;; (with-eval-after-load "evil"
-;;   (evil-define-operator my-evil-comment-or-uncomment (beg end)
-;;                         "Toggle comment for the region between BEG and END."
-;;                         (interactive "<r>")
-;;                         (comment-or-uncomment-region beg end))
-;;   (evil-define-key 'normal 'global (kbd "gc") 'my-evil-comment-or-uncomment))
 
 ;; Utilities
 (use-package which-key
@@ -297,11 +322,7 @@
   :commands (undo-fu-only-undo
              undo-fu-only-redo
              undo-fu-only-redo-all
-             undo-fu-disable-checkpoint)
-  :config
-  (global-unset-key (kbd "C-z"))
-  (global-set-key (kbd "C-z") 'undo-fu-only-undo)
-  (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
+             undo-fu-disable-checkpoint))
 
 (use-package undo-fu-session
   :ensure t
@@ -316,9 +337,5 @@
   (buffer-terminator-interval (* 10 60)) ; 10 minutes
   :config
   (buffer-terminator-mode 1))
-
-;; Local variables:
-;; byte-compile-warnings: (not obsolete free-vars)
-;; End:
 
 ;;; post-init.el ends here
