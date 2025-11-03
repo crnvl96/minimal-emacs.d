@@ -29,7 +29,7 @@
   :config
   (setq scroll-margin 8)
   (setq hscroll-margin 16)
-  (setq-default display-line-numbers-type 'relative)
+  ;; (setq-default display-line-numbers-type 'relative)
   (setq package-install-upgrade-built-in t)
   (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
     (add-hook hook #'display-line-numbers-mode))
