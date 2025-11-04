@@ -91,53 +91,33 @@
   :custom
   (save-place-limit 400)) ; Maximum number of entries to retain in the list; nil means no limit.
 
+
 ;; Display the time in the modeline
 (add-hook 'after-init-hook #'display-time-mode)
-
 ;; Paren match highlighting
 (add-hook 'after-init-hook #'show-paren-mode)
-
-;; Track changes in the window configuration, allowing undoing actions such as
-;; closing windows.
+;; Track changes in the window configuration, allowing undoing actions such as closing windows
 (add-hook 'after-init-hook #'winner-mode)
 
-(unless (and (eq window-system 'mac)
-             (bound-and-true-p mac-carbon-version-string))
-  (setq pixel-scroll-precision-use-momentum nil)
-  (pixel-scroll-precision-mode 1))
-
-;; When auto-save-visited-mode is enabled, Emacs will auto-save file-visiting
-;; buffers after a certain amount of idle time if the user forgets to save it
-;; with save-buffer or C-x s for example.
-;;
-;; This is different from auto-save-mode: auto-save-mode periodically saves
-;; all modified buffers, creating backup files, including those not associated
-;; with a file, while auto-save-visited-mode only saves file-visiting buffers
+;; auto-save-visited-mode only saves file-visiting buffers
 ;; after a period of idle time, directly saving to the file itself without
 ;; creating backup files.
 (setq auto-save-visited-interval 5)   ; Save after 5 seconds if inactivity
 (auto-save-visited-mode 1)
 
-;; Enabled backups save your changes to a file intermittently
-(setq make-backup-files t)
-(setq vc-make-backup-files t)
-(setq kept-old-versions 10)
-(setq kept-new-versions 10)
-
 ;; Scrolloff
-;; (setq scroll-margin 8)
+(setq scroll-margin 8)
 (setq hscroll-margin 16)
 
 ;; Dired buffers: Automatically hide file details (permissions, size,
 ;; modification date, etc.) and all the files in the `dired-omit-files' regular
 ;; expression for a cleaner display.
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
+;; Constrain vertical cursor movement to lines within the buffer
+(setq dired-movement-style 'bounded-files)
 
 ;; Enables visual indication of minibuffer recursion depth after initialization.
 (add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
-
-;; Constrain vertical cursor movement to lines within the buffer
-(setq dired-movement-style 'bounded-files)
 
 ;; When tooltip-mode is enabled, certain UI elements (e.g., help text,
 ;; mouse-hover hints) will appear as native system tooltips (pop-up windows),
@@ -158,10 +138,14 @@
 ;; Allow Emacs to upgrade built-in packages, such as Org mode
 (setq package-install-upgrade-built-in t)
 
+
+;; Always display line numbers
 (dolist (hook '(prog-mode-hook text-mode-hook conf-mode-hook))
   (add-hook hook #'display-line-numbers-mode))
+
+
 (set-face-attribute 'default nil
-                    :height 200 :weight 'normal :family "Berkeley Mono")
+                    :height 120 :weight 'normal :family "Berkeley Mono")
 
 (use-package uniquify
   :ensure nil
@@ -171,7 +155,8 @@
   (uniquify-after-kill-buffer-p t))
 
 (global-set-key (kbd "M-n") 'forward-paragraph)
-(global-set-key (kbd "M-u") 'backward-paragraph)
+(global-set-key (kbd "M-p") 'backward-paragraph)
+(define-key isearch-mode-map (kbd "C-j") 'isearch-exit)
 
 (use-package server
   :ensure nil
@@ -337,27 +322,23 @@
 (use-package corfu
   :ensure t
   :custom
-  (corfu-cycle t)
-  (corfu-preselect nil)
-  (corfu-auto nil)
-  ;; Hide commands in M-x which do not apply to the current mode.
-  (read-extended-command-predicate #'command-completion-default-include-p)
-  ;; Disable Ispell completion function. As an alternative try `cape-dict'.
-  (text-mode-ispell-word-completion nil)
+  (corfu-cycle t)                                                          ; Enable cycling the selector
+  (corfu-preselect nil)                                                    ; Don't preselect any item
+  (corfu-auto nil)                                                         ; Show completion only when requested
+  (corfu-quit-at-boundary nil)                                             ; Never quit at completion boundary
+  (corfu-quit-no-match nil)                                                ; Never quit, even if there is no match
+  (corfu-preview-current t)                                                ; Enable current candidate preview
+  (corfu-on-exact-match nil)                                               ; Configure handling of exact matches
+  (read-extended-command-predicate #'command-completion-default-include-p) ; Hide commands in M-x which do not apply to the current mode.
+  (text-mode-ispell-word-completion nil)                                   ; Disable Ispell completion function. As an alternative try `cape-dict'.
   (tab-always-indent 'complete)
   :bind (:map corfu-map
-              ("C-n" . corfu-next)
-              ("C-p" . corfu-previous)
-              ("<escape>" . corfu-quit)
-              ("C-i" . corfu-complete)
-              ("C-g" . corfu-quit)
-              ("C-e" . corfu-quit)
-              ("RET" . corfu-insert)
-              ("C-y" . corfu-insert)
-              ("M-d" . corfu-show-documentation)
-              ("M-l" . corfu-show-location))
+              ("C-e" . corfu-quit)     ; Exit completion
+              ("C-i" . corfu-complete) ; Trigger completion
+              ("C-y" . corfu-insert))  ; Insert the currently selected item
   :init
   (global-corfu-mode)
+  (corfu-history-mode)
   (corfu-popupinfo-mode)
   :config
   (defun corfu-enable-always-in-minibuffer ()
@@ -487,6 +468,16 @@
          ("\\.md\\'" . markdown-mode)
          ("README\\.md\\'" . gfm-mode)))
 
+(use-package typst-ts-mode
+  :ensure t
+  :init
+  (add-to-list 'auto-mode-alist '("\\.typ\\'" . typst-ts-mode))
+  :custom
+  (typst-ts-watch-options "--open")
+  (typst-ts-mode-enable-raw-blocks-highlight t)
+  :config
+  (keymap-set typst-ts-mode-map "C-c C-c" #'typst-ts-tmenu))
+
 (use-package org
   :ensure t
   :commands (org-mode org-version)
@@ -502,16 +493,6 @@
   (org-fontify-whole-heading-line t)
   (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t))
-
-(use-package typst-ts-mode
-  :ensure t
-  :init
-  (add-to-list 'auto-mode-alist '("\\.typ\\'" . typst-ts-mode))
-  :custom
-  (typst-ts-watch-options "--open")
-  (typst-ts-mode-enable-raw-blocks-highlight t)
-  :config
-  (keymap-set typst-ts-mode-map "C-c C-c" #'typst-ts-tmenu))
 
 (use-package multiple-cursors
   :ensure t
