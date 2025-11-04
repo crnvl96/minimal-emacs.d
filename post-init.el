@@ -1,6 +1,12 @@
 ;;; post-init.el --- Post Init -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;; Compilation
+;;
+;; This is the step where we enable compile-angel.el. This package needes to be invoked
+;; as early as possible because it is responsible for ensuring that all Elisp libraries are
+;; both byte-compiled and native compiled
+
+;; Compile-angel.el
 (use-package compile-angel
   :demand t
   :custom
@@ -13,6 +19,28 @@
   (push "/post-early-init.el" compile-angel-excluded-files)
   (compile-angel-on-load-mode 1))
 
+;; Builtin Features
+;;
+;; Configure some packages that are already builtin into Emacs, such
+;; as savehist, autorevert, etc.
+
+;; Savehist is an Emacs feature that preserves the minibuffer history between
+;; sessions. It saves the history of inputs in the minibuffer, such as commands,
+;; search strings, and other prompts, to a file. This allows users to retain
+;; their minibuffer history across Emacs restarts.
+(use-package savehist
+  :ensure nil
+  :commands (savehist-mode savehist-save)
+  :hook
+  (after-init . savehist-mode)
+  :custom
+  (savehist-autosave-interval 600)     ; The interval between autosaves of minibuffer history.
+  (savehist-additional-variables       ; List of additional variables to save.
+   '(kill-ring                         ; clipboard
+     register-alist                    ; macros
+     mark-ring global-mark-ring        ; marks
+     search-ring regexp-search-ring))) ; List of regular expression search string sequences.
+
 ;; Auto-revert in Emacs is a feature that automatically updates the
 ;; contents of a buffer to reflect changes made to the underlying file
 ;; on disk.
@@ -22,11 +50,11 @@
   :hook
   (after-init . global-auto-revert-mode)
   :custom
-  (auto-revert-interval 3)
-  (auto-revert-remote-files nil)
-  (auto-revert-use-notify t)
-  (auto-revert-avoid-polling nil)
-  (auto-revert-verbose t))
+  (auto-revert-interval 3)        ; Time, in seconds, between Auto-Revert Mode file checks.
+  (auto-revert-remote-files nil)  ; If nil remote files are not reverted in Auto Revert modes.
+  (auto-revert-use-notify t)      ; If non-nil Auto-Revert Mode uses file notification functions.
+  (auto-revert-avoid-polling nil) ; Set this variable to a non-nil value to save power by avoiding polling when possible.
+  (auto-revert-verbose t))        ; When non-nil, a message is generated whenever a buffer is reverted.
 
 ;; Recentf is an Emacs package that maintains a list of recently
 ;; accessed files, making it easier to reopen files you have worked on
@@ -37,6 +65,8 @@
   :hook
   (after-init . recentf-mode)
   :custom
+  ;; Define when to automatically cleanup the recent list.
+  ;; That is, remove duplicates, non-kept, and excluded files.
   (recentf-auto-cleanup (if (daemonp) 300 'never))
   (recentf-exclude
    (list "\\.tar$" "\\.tbz2$" "\\.tbz$" "\\.tgz$" "\\.bz2$"
@@ -63,23 +93,6 @@
   :custom
   (save-place-limit 400))
 
-;; savehist is an Emacs feature that preserves the minibuffer history between
-;; sessions. It saves the history of inputs in the minibuffer, such as commands,
-;; search strings, and other prompts, to a file. This allows users to retain
-;; their minibuffer history across Emacs restarts.
-(use-package savehist
-  :ensure nil
-  :commands (savehist-mode savehist-save)
-  :hook
-  (after-init . savehist-mode)
-  :custom
-  (savehist-autosave-interval 600)
-  (savehist-additional-variables
-   '(kill-ring                        ; clipboard
-     register-alist                   ; macros
-     mark-ring global-mark-ring       ; marks
-     search-ring regexp-search-ring)))
-
 ;; Display the time in the modeline
 (add-hook 'after-init-hook #'display-time-mode)
 
@@ -89,6 +102,11 @@
 ;; Track changes in the window configuration, allowing undoing actions such as
 ;; closing windows.
 (add-hook 'after-init-hook #'winner-mode)
+
+(unless (and (eq window-system 'mac)
+             (bound-and-true-p mac-carbon-version-string))
+  (setq pixel-scroll-precision-use-momentum nil)
+  (pixel-scroll-precision-mode 1))
 
 ;; When auto-save-visited-mode is enabled, Emacs will auto-save file-visiting
 ;; buffers after a certain amount of idle time if the user forgets to save it
@@ -154,9 +172,8 @@
   (uniquify-separator "•")
   (uniquify-after-kill-buffer-p t))
 
-(use-package emacs
-  :bind(("M-n" . forward-paragraph)
-        ("M-p". backward-paragraph)))
+(global-set-key (kbd "M-n") 'forward-paragraph)
+(global-set-key (kbd "M-u") 'backward-paragraph)
 
 (use-package server
   :ensure nil
@@ -183,7 +200,6 @@
   :ensure t
   :commands outline-indent-minor-mode
   :custom
-  :custom
   (outline-indent-ellipsis " ▼ ")
   :init
   (add-hook 'python-mode-hook #'outline-indent-minor-mode)
@@ -199,25 +215,9 @@
          (conf-mode . stripspace-local-mode))
   :custom
   (stripspace-only-if-initially-clean nil)
-  (stripspace-restore-column t))
-
-(use-package auto-package-update
-  :ensure t
-  :custom
-  (auto-package-update-interval 7)
-  (auto-package-update-hide-results t)
-  (auto-package-update-delete-old-versions t)
-  (auto-package-update-prompt-before-update t)
-  :config
-  (auto-package-update-maybe)
-  (auto-package-update-at-time "10:00"))
-
-;; (use-package inhibit-mouse
-;;   :ensure t
-;;   :config
-;;   (if (daemonp)
-;;       (add-hook 'server-after-make-frame-hook #'inhibit-mouse-mode)
-;;     (inhibit-mouse-mode 1)))
+  (stripspace-restore-column t)
+  :init
+  (stripspace-global-mode 1))
 
 (use-package helpful
   :ensure t
@@ -277,11 +277,6 @@
   :hook (after-init . persist-text-scale-mode)
   :custom
   (text-scale-mode-step 1.07))
-
-(unless (and (eq window-system 'mac)
-             (bound-and-true-p mac-carbon-version-string))
-  (setq pixel-scroll-precision-use-momentum nil)
-  (pixel-scroll-precision-mode 1))
 
 (use-package marginalia
   :ensure t
