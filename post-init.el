@@ -1,24 +1,5 @@
 ;;; post-init.el --- Post Init -*- no-byte-compile: t; lexical-binding: t; -*-
 
-;; Compilation
-;;
-;; This is the step where we enable compile-angel.el. This package needes to be invoked
-;; as early as possible because it is responsible for ensuring that all Elisp libraries are
-;; both byte-compiled and native compiled
-
-;; Compile-angel.el
-(use-package compile-angel
-  :demand t
-  :custom
-  (compile-angel-verbose t)
-  :config
-  (push "/init.el" compile-angel-excluded-files)
-  (push "/early-init.el" compile-angel-excluded-files)
-  (push "/post-init.el" compile-angel-excluded-files)
-  (push "/pre-early-init.el" compile-angel-excluded-files)
-  (push "/post-early-init.el" compile-angel-excluded-files)
-  (compile-angel-on-load-mode 1))
-
 ;; Builtin Features
 ;;
 ;; Configure some packages that are already builtin into Emacs, such
@@ -290,18 +271,19 @@
          ("C-c C-<" . mc/mark-all-like-this)
          ("C-S-c C-S-c" . mc/edit-lines)))
 
+;; Optionally use the `orderless' completion style.
 (use-package orderless
-  :ensure t
   :custom
-  (orderless-matching-styles '(orderless-literal orderless-regexp orderless-flex))
-  (completion-styles '(orderless partial-completion basic))
-  (completion-category-defaults nil)
-  (completion-category-overrides '((file (styles partial-completion)))))
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion))))
+  (completion-category-defaults nil) ;; Disable defaults, use our settings
+  (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
 
 ;; Version control
 (use-package magit
   :ensure t)
 
+;; Better Undo-Redo
 (use-package undo-fu
   :ensure t
   :demand t
@@ -319,6 +301,7 @@
   :commands undo-fu-session-global-mode
   :hook (after-init . undo-fu-session-global-mode))
 
+;; Completion
 (use-package corfu
   :ensure t
   :custom
@@ -331,11 +314,11 @@
   (corfu-on-exact-match nil)                                               ; Configure handling of exact matches
   (read-extended-command-predicate #'command-completion-default-include-p) ; Hide commands in M-x which do not apply to the current mode.
   (text-mode-ispell-word-completion nil)                                   ; Disable Ispell completion function. As an alternative try `cape-dict'.
-  (tab-always-indent 'complete)
-  :bind (:map corfu-map
-              ("C-e" . corfu-quit)     ; Exit completion
-              ("C-i" . corfu-complete) ; Trigger completion
-              ("C-y" . corfu-insert))  ; Insert the currently selected item
+  (tab-always-indent 'complete)                                            ; Controls the operation of the TAB key. Hitting TAB always just indents the current line.
+  :bind (:map corfu-map                                                    ; Keymaps uses when completion popup is shown
+              ("C-e" . corfu-quit)                                         ; Exit completion
+              ("C-i" . corfu-complete)                                     ; Trigger completion
+              ("C-y" . corfu-insert))                                      ; Insert the currently selected item
   :init
   (global-corfu-mode)
   (corfu-history-mode)
@@ -349,6 +332,7 @@
       (corfu-mode 1)))
   (add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1))
 
+;; Completion at point package
 (use-package cape
   :ensure t
   :init
@@ -360,6 +344,7 @@
 (use-package wgrep
   :ensure t)
 
+;; Context-aware actions
 (use-package embark
   :ensure t
   :bind
@@ -375,11 +360,15 @@
                  nil
                  (window-parameters (mode-line-format . none)))))
 
+;; Integration between Embark and consult
+;; This package is auto-loaded when Consult is detected, so there's no need
+;; for awaiting it to be loaded
 (use-package embark-consult
   :ensure t
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+;; Better interface for Search (files, grep, buffers, etc..)
 (use-package consult
   :ensure t
   :bind (("C-c f l" . consult-line)
@@ -389,24 +378,45 @@
          ("C-c f b" . consult-project-buffer)))
 
 ;; Language support
-(use-package treesit-auto
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+;; `crnvl96/treesit-install-all-languages' to install all languages
+;; `treesit-install-language-grammar' to install a specific language
+;; use `sort-lines' to sort
+(setq treesit-language-source-alist
+      '(
+        (bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
+        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+        (go "https://github.com/tree-sitter/tree-sitter-go")
+        (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
+        (html . ("https://github.com/tree-sitter/tree-sitter-html" "v0.23.0"))
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+        (jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc")
+        (json "https://github.com/tree-sitter/tree-sitter-json")
+        (markdown . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown" nil "tree-sitter-markdown/src"))
+        (markdown-inline . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown" nil "tree-sitter-markdown-inline/src"))
+        (mermaid "https://github.com/monaqa/tree-sitter-mermaid")
+        (python . ("https://github.com/tree-sitter/tree-sitter-python"))
+        (rust "https://github.com/tree-sitter/tree-sitter-rust")
+        (toml "https://github.com/ikatyang/tree-sitter-toml")
+        (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "tsx/src"))
+        (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "typescript/src"))
+        (typst "https://github.com/uben0/tree-sitter-typst")
+        (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+        ))
 
-(setq typst-tsauto-config
-      (make-treesit-auto-recipe
-       :lang 'typst
-       :ts-mode 'typ-ts-mode
-       :remap '(typst-mode)
-       :url "https://github.com/uben0/tree-sitter-typst"
-       :revision "master"
-       :source-dir "src"
-       :ext "\\.typ\\'"))
+(defun crnvl96/treesit-install-all-languages ()
+  "Install all languages specified by `treesit-language-source-alist'."
+  (interactive)
+  (let ((languages (mapcar 'car treesit-language-source-alist)))
+    (dolist (lang languages)
+	  (treesit-install-language-grammar lang)
+	  (message "`%s' parser was installed." lang)
+	  (sit-for 0.75))))
 
-(add-to-list 'treesit-auto-recipe-list typst-tsauto-config)
+(add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
+(add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.m?js\\'" . js-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
 
 (use-package lsp-mode
   :ensure t
