@@ -65,10 +65,8 @@
   :hook
   (after-init . recentf-mode)
   :custom
-  ;; Define when to automatically cleanup the recent list.
-  ;; That is, remove duplicates, non-kept, and excluded files.
-  (recentf-auto-cleanup (if (daemonp) 300 'never))
-  (recentf-exclude
+  (recentf-auto-cleanup (if (daemonp) 300 'never)) ; Define when to automatically cleanup the recent list.
+  (recentf-exclude                                 ; List of regexps and predicates for filenames excluded from the recent list.
    (list "\\.tar$" "\\.tbz2$" "\\.tbz$" "\\.tgz$" "\\.bz2$"
          "\\.bz$" "\\.gz$" "\\.gzip$" "\\.xz$" "\\.zip$"
          "\\.7z$" "\\.rar$"
@@ -91,7 +89,7 @@
   :hook
   (after-init . save-place-mode)
   :custom
-  (save-place-limit 400))
+  (save-place-limit 400)) ; Maximum number of entries to retain in the list; nil means no limit.
 
 ;; Display the time in the modeline
 (add-hook 'after-init-hook #'display-time-mode)
@@ -194,7 +192,7 @@
   :ensure t)
 
 (mapc #'disable-theme custom-enabled-themes)
-(load-theme 'standard-light-tinted t)
+(load-theme 'ef-duo-dark t)
 
 (use-package outline-indent
   :ensure t
@@ -206,6 +204,15 @@
   (add-hook 'python-ts-mode-hook #'outline-indent-minor-mode)
   (add-hook 'yaml-mode-hook #'outline-indent-minor-mode)
   (add-hook 'yaml-ts-mode-hook #'outline-indent-minor-mode))
+
+;; (use-package centered-cursor-mode
+;;   :ensure t
+;;   :init (global-centered-cursor-mode 1))
+
+(use-package golden-ratio-scroll-screen
+  :ensure t
+  :bind (("C-v" . golden-ratio-scroll-screen-up)
+         ("M-v" . golden-ratio-scroll-screen-down)))
 
 (use-package stripspace
   :ensure t
