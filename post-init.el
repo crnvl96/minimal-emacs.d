@@ -14,6 +14,19 @@
 (use-package doric-themes
   :ensure t)
 
+(use-package doom-themes
+  :ensure t
+  :custom
+  ;; if nil, bold is universally disabled
+  (doom-themes-enable-bold t)
+  ;; if nil, italics is universally disabled
+  (doom-themes-enable-italic t)
+  :config
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+
 (mapc #'disable-theme custom-enabled-themes)
 (load-theme 'ef-duo-dark t)
 
@@ -27,10 +40,6 @@
   (add-hook 'python-ts-mode-hook #'outline-indent-minor-mode)
   (add-hook 'yaml-mode-hook #'outline-indent-minor-mode)
   (add-hook 'yaml-ts-mode-hook #'outline-indent-minor-mode))
-
-;; (use-package centered-cursor-mode
-;;   :ensure t
-;;   :init (global-centered-cursor-mode 1))
 
 (use-package golden-ratio-scroll-screen
   :ensure t

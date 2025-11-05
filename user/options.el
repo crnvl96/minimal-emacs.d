@@ -2,24 +2,30 @@
 
 ;; Options and variables
 
-(add-hook 'after-init-hook #'display-time-mode) ; Display current time on modeline
-(add-hook 'after-init-hook #'show-paren-mode)   ; Highligh matching paren
-(add-hook 'after-init-hook #'winner-mode)       ; Also track changes on windows configuration
+;; Display current time on modeline
+(add-hook 'after-init-hook #'display-time-mode)
+
+;; Highlight matching paren
+(add-hook 'after-init-hook #'show-paren-mode)
+
+;; Track changes on windows configuration
+(add-hook 'after-init-hook #'winner-mode)
 
 ;; auto-save-visited-mode only saves file-visiting buffers
 ;; after a period of idle time, directly saving to the file itself without
 ;; creating backup files.
-(setq auto-save-visited-interval 5) ; Save after 5 seconds if inactivity
-(auto-save-visited-mode 1)          ; Enable mode
+(setq auto-save-visited-interval 5) ; Save after 5 seconds of inactivity
+(auto-save-visited-mode 1)
 
 ;; Scrolloff
-(setq scroll-margin 8)   ; Vertical margin
-(setq hscroll-margin 16) ; Horizontal margin
+(setq scroll-margin 8)   ; Vertical
+(setq hscroll-margin 16) ; Horizontal
 
 ;; Automatically hide file details (permissions, size, modification date, etc.)
 ;; and all the files in the `dired-omit-files' regular expression for a cleaner display.
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
-(setq dired-movement-style 'bounded-files) ; Constrain vertical cursor movement
+;; Constrain vertical cursor movement
+(setq dired-movement-style 'bounded-files)
 
 ;; Enables visual indication of minibuffer recursion depth after initialization.
 (add-hook 'after-init-hook #'minibuffer-depth-indicate-mode)
@@ -65,8 +71,10 @@
   :hook
   (after-init . savehist-mode)
   :custom
-  (savehist-autosave-interval 600)     ; The interval between autosaves of minibuffer history.
-  (savehist-additional-variables       ; List of additional variables to save.
+  ;; Interval between saves
+  (savehist-autosave-interval 600)
+  ;; List of additional variables to save
+  (savehist-additional-variables
    '(kill-ring                         ; clipboard
      register-alist                    ; macros
      mark-ring global-mark-ring        ; marks
@@ -81,11 +89,16 @@
   :hook
   (after-init . global-auto-revert-mode)
   :custom
-  (auto-revert-interval 3)        ; Time, in seconds, between Auto-Revert Mode file checks.
-  (auto-revert-remote-files nil)  ; If nil remote files are not reverted in Auto Revert modes.
-  (auto-revert-use-notify t)      ; If non-nil Auto-Revert Mode uses file notification functions.
-  (auto-revert-avoid-polling nil) ; Set this variable to a non-nil value to save power by avoiding polling when possible.
-  (auto-revert-verbose t))        ; When non-nil, a message is generated whenever a buffer is reverted.
+  ;; Time in seconds between Auto-Revert mode checks files
+  (auto-revert-interval 3)
+  ;; Don't revert remote files
+  (auto-revert-remote-files nil)
+  ;; Use file notification functions
+  (auto-revert-use-notify t)
+  ;; Avoid polling when possible
+  (auto-revert-avoid-polling nil)
+  ;; Generate a message whenever a buffer is reverted
+  (auto-revert-verbose t))
 
 ;; Recentf is an Emacs package that maintains a list of recently
 ;; accessed files, making it easier to reopen files you have worked on
@@ -96,8 +109,10 @@
   :hook
   (after-init . recentf-mode)
   :custom
-  (recentf-auto-cleanup (if (daemonp) 300 'never)) ; Define when to automatically cleanup the recent list.
-  (recentf-exclude                                 ; List of regexps and predicates for filenames excluded from the recent list.
+  ;; Define when to automatically clean the recentf list
+  (recentf-auto-cleanup (if (daemonp) 300 'never))
+  ;; List to exclude from recentf
+  (recentf-exclude
    (list "\\.tar$" "\\.tbz2$" "\\.tbz$" "\\.tgz$" "\\.bz2$"
          "\\.bz$" "\\.gz$" "\\.gzip$" "\\.xz$" "\\.zip$"
          "\\.7z$" "\\.rar$"
@@ -120,7 +135,8 @@
   :hook
   (after-init . save-place-mode)
   :custom
-  (save-place-limit 400)) ; Maximum number of entries to retain in the list; nil means no limit.
+  ;; Max number of entries to retain in the list (nil means no limit)
+  (save-place-limit 400))
 
 (use-package uniquify
   :ensure nil
