@@ -44,7 +44,7 @@
 (delete-selection-mode 1)
 
 ;; Highlight current line
-(global-hl-line-mode 1)
+;; (global-hl-line-mode 1)
 
 ;; Allow Emacs to upgrade built-in packages, such as Org mode
 (setq package-install-upgrade-built-in t)
@@ -60,6 +60,13 @@
 ;;
 ;; Configure some packages that are already builtin into Emacs, such
 ;; as savehist, autorevert, etc.
+
+(use-package whitespace
+  :custom
+  (whitespace-style '(face trailing empty))
+  (whitespace-highlight-on-current-line t)
+  :init
+  (global-whitespace-mode t))
 
 ;; Savehist is an Emacs feature that preserves the minibuffer history between
 ;; sessions. It saves the history of inputs in the minibuffer, such as commands,
