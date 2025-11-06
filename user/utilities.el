@@ -6,6 +6,9 @@
 (use-package golden-ratio-scroll-screen
   :ensure t)
 
+(use-package magit
+  :ensure t)
+
 (use-package eat
   :ensure t)
 

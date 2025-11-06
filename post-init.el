@@ -8,9 +8,3 @@
 (load-file "~/.emacs.d/user/utilities.el")
 (load-file "~/.emacs.d/user/completion.el")
 (load-file "~/.emacs.d/user/lang.el")
-
-(use-package magit
-  :ensure t)
-
-(use-package agent-shell
-  :ensure t)
