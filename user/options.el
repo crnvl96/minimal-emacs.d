@@ -152,10 +152,6 @@
   (uniquify-separator "•")
   (uniquify-after-kill-buffer-p t))
 
-(global-set-key (kbd "M-n") 'forward-paragraph)
-(global-set-key (kbd "M-p") 'backward-paragraph)
-(define-key isearch-mode-map (kbd "C-j") 'isearch-exit)
-
 (use-package server
   :ensure nil
   :commands server-start

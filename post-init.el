@@ -4,11 +4,10 @@
 (load-file "~/.emacs.d/user/themes.el")
 (load-file "~/.emacs.d/user/treesitter.el")
 (load-file "~/.emacs.d/user/lsp.el")
+(load-file "~/.emacs.d/user/keymaps.el")
 
 (use-package golden-ratio-scroll-screen
-  :ensure t
-  :bind (("C-v" . golden-ratio-scroll-screen-up)
-         ("M-v" . golden-ratio-scroll-screen-down)))
+  :ensure t)
 
 (use-package helpful
   :ensure t
@@ -39,14 +38,6 @@
   :hook
   (emacs-lisp-mode . highlight-defined-mode))
 
-(use-package paredit
-  :ensure t
-  :commands paredit-mode
-  :hook
-  (emacs-lisp-mode . paredit-mode)
-  :config
-  (define-key paredit-mode-map (kbd "RET") nil))
-
 (use-package page-break-lines
   :ensure t
   :commands (page-break-lines-mode
@@ -63,6 +54,7 @@
              elisp-refs-symbol))
 
 (use-package persist-text-scale
+  :ensure t
   :commands (persist-text-scale-mode
              persist-text-scale-restore)
   :hook (after-init . persist-text-scale-mode)
@@ -80,22 +72,17 @@
   (vertico-mode))
 
 (use-package expand-region
-  :bind ("C-=" . er/expand-region))
+  :ensure t)
 
 (use-package multiple-cursors
-  :ensure t
-  :bind (("C->" . mc/mark-next-like-this)
-         ("C-<" . mc/mark-previous-like-this)
-         ("C-c C-<" . mc/mark-all-like-this)
-         ("C-S-c C-S-c" . mc/edit-lines)))
+  :ensure t)
 
-;; Optionally use the `orderless' completion style.
 (use-package orderless
+  :ensure t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles partial-completion))))
-  (completion-category-defaults nil) ;; Disable defaults, use our settings
-  (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
+  (completion-category-defaults nil))
 
 ;; Version control
 (use-package magit
@@ -110,9 +97,7 @@
              undo-fu-only-redo-all
              undo-fu-disable-checkpoint)
   :config
-  (global-unset-key (kbd "C-z"))
-  :bind (("C-z" . undo-fu-only-undo)
-         ("C-S-z" . undo-fu-only-redo)))
+  (global-unset-key (kbd "C-z")))
 
 (use-package undo-fu-session
   :ensure t
@@ -123,20 +108,16 @@
 (use-package corfu
   :ensure t
   :custom
-  (corfu-cycle t)                                                          ; Enable cycling the selector
-  (corfu-preselect nil)                                                    ; Don't preselect any item
-  (corfu-auto nil)                                                         ; Show completion only when requested
-  (corfu-quit-at-boundary nil)                                             ; Never quit at completion boundary
-  (corfu-quit-no-match nil)                                                ; Never quit, even if there is no match
-  (corfu-preview-current t)                                                ; Enable current candidate preview
-  (corfu-on-exact-match nil)                                               ; Configure handling of exact matches
-  (read-extended-command-predicate #'command-completion-default-include-p) ; Hide commands in M-x which do not apply to the current mode.
-  (text-mode-ispell-word-completion nil)                                   ; Disable Ispell completion function. As an alternative try `cape-dict'.
-  (tab-always-indent 'complete)                                            ; Controls the operation of the TAB key. Hitting TAB always just indents the current line.
-  :bind (:map corfu-map                                                    ; Keymaps uses when completion popup is shown
-              ("C-e" . corfu-quit)                                         ; Exit completion
-              ("C-i" . corfu-complete)                                     ; Trigger completion
-              ("C-y" . corfu-insert))                                      ; Insert the currently selected item
+  (corfu-cycle t)
+  (corfu-preselect nil)
+  (corfu-auto nil)
+  (corfu-quit-at-boundary nil)
+  (corfu-quit-no-match nil)
+  (corfu-preview-current t)
+  (corfu-on-exact-match nil)
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  (text-mode-ispell-word-completion nil)
+  (tab-always-indent 'complete)
   :init
   (global-corfu-mode)
   (corfu-history-mode)
@@ -150,7 +131,7 @@
       (corfu-mode 1)))
   (add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1))
 
-;; Completion at point package
+;; Completion at point
 (use-package cape
   :ensure t
   :init
@@ -165,10 +146,6 @@
 ;; Context-aware actions
 (use-package embark
   :ensure t
-  :bind
-  (("C-." . embark-act)
-   ("C-," . embark-dwim)
-   ("C-/" . embark-bindings))
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
   (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
@@ -188,12 +165,7 @@
 
 ;; Better interface for Search (files, grep, buffers, etc..)
 (use-package consult
-  :ensure t
-  :bind (("C-c f l" . consult-line)
-         ("C-c f f" . consult-fd)
-         ("C-c f g" . consult-ripgrep)
-         ("C-c f L" . consult-goto-line)
-         ("C-c f b" . consult-project-buffer)))
+  :ensure t)
 
 (use-package flymake-ruff
   :ensure t
@@ -230,9 +202,7 @@
   (add-to-list 'auto-mode-alist '("\\.typ\\'" . typst-ts-mode))
   :custom
   (typst-ts-watch-options "--open")
-  (typst-ts-mode-enable-raw-blocks-highlight t)
-  :config
-  (keymap-set typst-ts-mode-map "C-c C-c" #'typst-ts-tmenu))
+  (typst-ts-mode-enable-raw-blocks-highlight t))
 
 (use-package org
   :ensure t
@@ -250,23 +220,12 @@
   (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t))
 
-(use-package multiple-cursors
-  :ensure t
-  :bind (("C->" . mc/mark-next-like-this)
-         ("C-<" . mc/mark-previous-like-this)))
-
-(use-package expand-region
-  :ensure t
-  :bind (("C-=" . er/expand-region)))
+(use-package avy
+  :ensure t)
 
 (use-package ace-window
   :ensure t
-  :bind (("M-i" . avy-goto-char-2)))
-
-(use-package ace-window
-  :ensure t
-  :config
-  (global-set-key (kbd "M-o") 'ace-window))
+  :config)
 
 (use-package zoom
   :ensure t
@@ -274,21 +233,6 @@
   (zoom-size '(0.618 . 0.618))
   :config
   (zoom-mode t))
-
-;; Utilities
-(use-package which-key
-  :ensure nil
-  :commands which-key-mode
-  :hook (after-init . which-key-mode)
-  :custom
-  (which-key-idle-delay 0.5)
-  (which-key-idle-secondary-delay 0.25)
-  (which-key-add-column-padding 1)
-  (which-key-max-description-length 40)
-  :config
-  (which-key-add-key-based-replacements
-    "C-x p" "Project"
-    "C-c ." "LSP"))
 
 (use-package buffer-terminator
   :ensure t
