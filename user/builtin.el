@@ -1,7 +1,5 @@
 ;;; options.el -*- no-byte-compile: t; lexical-binding: t; -*-
 
-;; Options and variables
-
 ;; Display current time on modeline
 (add-hook 'after-init-hook #'display-time-mode)
 
@@ -44,7 +42,7 @@
 (delete-selection-mode 1)
 
 ;; Highlight current line
-;; (global-hl-line-mode 1)
+(global-hl-line-mode 1)
 
 ;; Allow Emacs to upgrade built-in packages, such as Org mode
 (setq package-install-upgrade-built-in t)
@@ -61,6 +59,7 @@
 ;; Configure some packages that are already builtin into Emacs, such
 ;; as savehist, autorevert, etc.
 
+;;
 (use-package whitespace
   :custom
   (whitespace-style '(face trailing empty))
