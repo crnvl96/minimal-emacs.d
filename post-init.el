@@ -1,9 +1,5 @@
 ;;; post-init.el -*- no-byte-compile: t; lexical-binding: t; -*-
 
-;;;;;;;;;;;;;;;;;;;;;;
-;; Builtin packages ;;
-;;;;;;;;;;;;;;;;;;;;;;
-
 (use-package emacs
   :ensure nil
   :custom
@@ -28,7 +24,8 @@
   (after-init . minibuffer-depth-indicate-mode)
   ((prog-mode text-mode conf-mode) . display-line-numbers-mode)
   :config
-  (set-face-attribute 'default nil :height 120 :weight 'normal :family "Berkeley Mono"))
+  (setq-default display-line-numbers-type 'relative)
+  (set-face-attribute 'default nil :height 200 :weight 'normal :family "Berkeley Mono"))
 
 (use-package whitespace
   :custom
@@ -37,57 +34,38 @@
   :init
   (global-whitespace-mode t))
 
-;; Savehist is an Emacs feature that preserves the minibuffer history between
-;; sessions. It saves the history of inputs in the minibuffer, such as commands,
-;; search strings, and other prompts, to a file. This allows users to retain
-;; their minibuffer history across Emacs restarts.
 (use-package savehist
   :ensure nil
   :commands (savehist-mode savehist-save)
   :hook
   (after-init . savehist-mode)
   :custom
-  ;; Interval between saves
   (savehist-autosave-interval 600)
-  ;; List of additional variables to save
   (savehist-additional-variables
-   '(kill-ring                         ; clipboard
-     register-alist                    ; macros
-     mark-ring global-mark-ring        ; marks
-     search-ring regexp-search-ring))) ; List of regular expression search string sequences.
+   '(kill-ring
+     register-alist
+     mark-ring global-mark-ring
+     search-ring regexp-search-ring)))
 
-;; Auto-revert in Emacs is a feature that automatically updates the
-;; contents of a buffer to reflect changes made to the underlying file
-;; on disk.
 (use-package autorevert
   :ensure nil
   :commands (auto-revert-mode global-auto-revert-mode)
   :hook
   (after-init . global-auto-revert-mode)
   :custom
-  ;; Time in seconds between Auto-Revert mode checks files
   (auto-revert-interval 3)
-  ;; Don't revert remote files
   (auto-revert-remote-files nil)
-  ;; Use file notification functions
   (auto-revert-use-notify t)
-  ;; Avoid polling when possible
   (auto-revert-avoid-polling nil)
-  ;; Generate a message whenever a buffer is reverted
   (auto-revert-verbose t))
 
-;; Recentf is an Emacs package that maintains a list of recently
-;; accessed files, making it easier to reopen files you have worked on
-;; recently.
 (use-package recentf
   :ensure nil
   :commands (recentf-mode recentf-cleanup)
   :hook
   (after-init . recentf-mode)
   :custom
-  ;; Define when to automatically clean the recentf list
   (recentf-auto-cleanup (if (daemonp) 300 'never))
-  ;; List to exclude from recentf
   (recentf-exclude
    (list "\\.tar$" "\\.tbz2$" "\\.tbz$" "\\.tgz$" "\\.bz2$"
          "\\.bz$" "\\.gz$" "\\.gzip$" "\\.xz$" "\\.zip$"
@@ -102,16 +80,12 @@
   ;; `kill-emacs-hook' by `recentf-mode'.
   (add-hook 'kill-emacs-hook #'recentf-cleanup -90))
 
-;; save-place-mode enables Emacs to remember the last location within a file
-;; upon reopening. This feature is particularly beneficial for resuming work at
-;; the precise point where you previously left off.
 (use-package saveplace
   :ensure nil
   :commands (save-place-mode save-place-local-mode)
   :hook
   (after-init . save-place-mode)
   :custom
-  ;; Max number of entries to retain in the list (nil means no limit)
   (save-place-limit 400))
 
 (use-package uniquify
@@ -126,10 +100,6 @@
   :commands server-start
   :hook
   (after-init . server-start))
-
-;;;;;;;;;;;;
-;; Themes ;;
-;;;;;;;;;;;;
 
 (use-package modus-themes
   :ensure t
@@ -161,75 +131,47 @@
 (use-package doom-themes
   :ensure t
   :custom
-  ;; if nil, bold is universally disabled
   (doom-themes-enable-bold t)
-  ;; if nil, italics is universally disabled
   (doom-themes-enable-italic t)
   :config
-  ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
-  ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 
 (mapc #'disable-theme custom-enabled-themes)
 (load-theme 'doom-city-lights t)
 
-;;;;;;;;;;;;;;;
-;; Evil Mode ;;
-;;;;;;;;;;;;;;;
-
-(setq evil-undo-system 'undo-fu)
-
-;; Vim emulation
 (use-package evil
   :ensure t
   :commands (evil-mode evil-define-key)
   :hook (after-init . evil-mode)
   :init
-  ;; It has to be defined before evil
+  (setq evil-undo-system 'undo-fu)
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
   (setq evil-want-C-u-scroll t)
   :custom
-  ;; Make :s in visual mode operate only on the actual visual selection
-  ;; (character or block), instead of the full lines covered by the selection
   (evil-ex-visual-char-range t)
-  ;; Use Vim-style regular expressions in search and substitute commands,
-  ;; allowing features like \v (very magic), \zs, and \ze for precise matches
   (evil-ex-search-vim-style-regexp t)
-  ;; Enable automatic horizontal split below
   (evil-split-window-below t)
-  ;; Enable automatic vertical split to the right
   (evil-vsplit-window-right t)
-  ;; Disable echoing Evil state to avoid replacing eldoc
   (evil-echo-state nil)
-  ;; Do not move cursor back when exiting insert state
   (evil-move-cursor-back nil)
-  ;; Make `v$` exclude the final newline
   (evil-v$-excludes-newline t)
-  ;; Allow C-h to delete in insert state
   (evil-want-C-h-delete t)
-  ;; Enable C-u to delete back to indentation in insert state
   (evil-want-C-u-delete t)
-  ;; Enable fine-grained undo behavior
   (evil-want-fine-undo t)
-  ;; Allow moving cursor beyond end-of-line in visual block mode
   (evil-move-beyond-eol t)
-  ;; Disable wrapping of search around buffer
   (evil-search-wrap nil)
-  ;; Whether Y yanks to the end of the line
   (evil-want-Y-yank-to-eol t))
 
 (use-package evil-collection
   :after evil
   :ensure t
   :init
-  ;; It has to be defined before evil-colllection
   (setq evil-collection-setup-minibuffer t)
   :config
   (evil-collection-init))
 
-;;; Which-key
 (use-package which-key
   :ensure nil
   :defer t
@@ -240,64 +182,25 @@
     "C-x p" "Project"
     "C-c ." "LSP"
     "C-c f" "Find")
-
   (which-key-add-keymap-based-replacements global-map
-    ;; General
-    "M-n" '("Go to next paragraph" . forward-paragraph)
-    "M-p" '("Go to previous paragraph" . backward-paragraph)
-
     ;; Consult
     "C-c f f" '("Find files" . consult-fd)
     "C-c f l" '("Find lines" . consult-line)
     "C-c f g" '("Grep files" . consult-ripgrep)
     "C-c f b" '("List buffers" . consult-project-buffer)
     "C-c f L" '("Go to line" . consult-goto-line)
-
-    ;; Golden Ratio Scroll Screen
-    "C-v" '("Scroll screen up" . golden-ratio-scroll-screen-up)
-    "M-v" '("Scroll screen down" . golden-ratio-scroll-screen-down)
-
-    ;; Expand Region
-    "C-=" '("Expand region" . er/expand-region)
-
-    ;; Undo-Fu
-    "C-z" '("Undo" . undo-fu-only-undo)
-    "C-S-z" '("Redo" . undo-fu-only-redo)
-
-    ;; Multiple Cursors
-    "C->" '("Put new cursor below" . mc/mark-next-like-this)
-    "C-<" '("Put new cursor above" . mc/mark-previous-like-this)
-
     ;; Embark
     "C-." '("Embark act" . embark-act)
     "C-," '("Embark dwin" . embark-dwim)
-    "C-/" '("Embark bindings" . embark-bindings)
-
-    ;; Avy
-    "M-i" '("Avy goto char" . avy-goto-char-2)
-
-    ;; Ace-Window
-    "M-o" '("Ace window" . ace-window)
-    )
-
-  (which-key-add-keymap-based-replacements isearch-mode-map
-    "C-j" '("Exit isearch" . isearch-exit))
-
+    "C-/" '("Embark bindings" . embark-bindings))
   (which-key-add-keymap-based-replacements corfu-map
     ;; Corfu
     "C-e" '("Abort completion menu" . corfu-quit)
     "C-i" '("Trigger completion" . corfu-complete)
-    "C-y" '("Insert completion item" . corfu-insert)
-    )
-
+    "C-y" '("Insert completion item" . corfu-insert))
   (which-key-add-keymap-based-replacements typst-ts-mode-map
     ;; Typst-ts-mode
-    "C-c C-c" '("Typst menu" . typst-ts-tmenu)
-    ))
-
-;;;;;;;;;;;;;;
-;; Packages ;;
-;;;;;;;;;;;;;;
+    "C-c C-c" '("Typst menu" . typst-ts-tmenu)))
 
 (use-package magit
   :ensure t)
@@ -310,13 +213,7 @@
 
 (use-package undo-fu
   :ensure t
-  :demand t
-  :commands (undo-fu-only-undo
-             undo-fu-only-redo
-             undo-fu-only-redo-all
-             undo-fu-disable-checkpoint)
-  :config
-  (global-unset-key (kbd "C-z")))
+  :demand t)
 
 (use-package undo-fu-session
   :ensure t
@@ -349,8 +246,8 @@
   :ensure t
   :custom
   (buffer-terminator-verbose nil)
-  (buffer-terminator-inactivity-timeout (* 20 60)) ;20 minutes
-  (buffer-terminator-interval (* 10 60)) ; 10 minutes
+  (buffer-terminator-inactivity-timeout (* 20 60))
+  (buffer-terminator-interval (* 10 60))
   :config
   (buffer-terminator-mode 1))
 
@@ -414,7 +311,6 @@
       (corfu-mode 1)))
   (add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1))
 
-;; Completion at point
 (use-package cape
   :ensure t
   :init
@@ -422,7 +318,6 @@
   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
   (add-to-list 'completion-at-point-functions #'cape-elisp-symbol))
 
-;; Context-aware actions
 (use-package embark
   :ensure t
   :init
@@ -434,9 +329,6 @@
                  nil
                  (window-parameters (mode-line-format . none)))))
 
-;; Integration between Embark and consult
-;; This package is auto-loaded when Consult is detected, so there's no need
-;; for awaiting it to be loaded
 (use-package embark-consult
   :ensure t
   :hook
@@ -445,17 +337,11 @@
 (use-package consult
   :ensure t)
 
-;;;;;;;;;;;;;;;;;;;;;;
-;; Language Support ;;
-;;;;;;;;;;;;;;;;;;;;;;
-
-;; Treesitter
-;; `crnvl96/treesit-install-all-languages' to install all languages
-;; `treesit-install-language-grammar' to install a specific language
-;; use `sort-lines' to sort
 (setq treesit-language-source-alist
-      '(
-        (bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
+      ;; `crnvl96/treesit-install-all-languages' to install all languages
+      ;; `treesit-install-language-grammar' to install a specific language
+      ;; use `sort-lines' to sort
+      '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
         (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
         (go "https://github.com/tree-sitter/tree-sitter-go")
         (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
@@ -472,8 +358,7 @@
         (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "tsx/src"))
         (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" nil "typescript/src"))
         (typst "https://github.com/uben0/tree-sitter-typst")
-        (yaml "https://github.com/ikatyang/tree-sitter-yaml")
-        ))
+        (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
 (defun crnvl96/treesit-install-all-languages ()
   "Install all languages specified by `treesit-language-source-alist'."
@@ -490,7 +375,6 @@
 (add-to-list 'auto-mode-alist '("\\.m?js\\'" . js-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
 
-;; LSP
 (use-package lsp-mode
   :ensure t
   :init
@@ -502,10 +386,10 @@
          (go-ts-mode . lsp)
          (lsp-mode . lsp-ui-mode)
          (lsp-mode . lsp-lens-mode)
-         (lsp-completion-mode . crnvl96/corfu-setup-lsp)) ; Use corfu instead the default for lsp completions
+         (lsp-completion-mode . crnvl96/corfu-setup-lsp))
   :commands lsp
   :custom
-  (lsp-completion-provider :none) ; Use corfu instead the default for lsp completions
+  (lsp-completion-provider :none)
   :config
   (defun crnvl96/corfu-setup-lsp ()
     "Use orderless and corfu completion style with lsp-capf instead of the
@@ -522,7 +406,6 @@
 (use-package lsp-pyright
   :ensure t)
 
-;; Formatter
 (use-package apheleia
   :ensure t
   :commands (apheleia-mode apheleia-global-mode)
@@ -533,7 +416,6 @@
   (setf (alist-get 'go-ts-mode apheleia-mode-alist)
         '(gofumpt)))
 
-;; Python
 (use-package flymake-ruff
   :ensure t
   :hook (python-ts-mode . flymake-ruff-load))
@@ -541,11 +423,9 @@
 (use-package pyvenv
   :ensure t)
 
-;; Go
 (use-package go-mode
   :ensure t)
 
-;; Markdown
 (use-package markdown-mode
   :ensure t
   :commands (gfm-mode
@@ -556,7 +436,6 @@
          ("\\.md\\'" . markdown-mode)
          ("README\\.md\\'" . gfm-mode)))
 
-;; Typst
 (use-package typst-ts-mode
   :ensure t
   :init
@@ -565,7 +444,6 @@
   (typst-ts-watch-options "--open")
   (typst-ts-mode-enable-raw-blocks-highlight t))
 
-;;Org
 (use-package org
   :ensure t
   :commands (org-mode org-version)
