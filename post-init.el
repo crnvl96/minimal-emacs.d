@@ -140,6 +140,26 @@
 (mapc #'disable-theme custom-enabled-themes)
 (load-theme 'doom-city-lights t)
 
+(use-package undo-fu
+  :ensure t
+  :demand t)
+
+(use-package undo-fu-session
+  :ensure t
+  :commands undo-fu-session-global-mode
+  :hook (after-init . undo-fu-session-global-mode))
+
+(use-package which-key
+  :ensure nil
+  :demand t
+  :commands which-key-mode
+  :hook (after-init . which-key-mode)
+  :config
+  (which-key-add-key-based-replacements
+    "C-x p" "Project"
+    "C-c ." "LSP"
+    "C-c f" "Find"))
+
 (use-package evil
   :ensure t
   :commands (evil-mode evil-define-key)
@@ -172,36 +192,6 @@
   :config
   (evil-collection-init))
 
-(use-package which-key
-  :ensure nil
-  :defer t
-  :commands which-key-mode
-  :hook (after-init . which-key-mode)
-  :config
-  (which-key-add-key-based-replacements
-    "C-x p" "Project"
-    "C-c ." "LSP"
-    "C-c f" "Find")
-  (which-key-add-keymap-based-replacements global-map
-    ;; Consult
-    "C-c f f" '("Find files" . consult-fd)
-    "C-c f l" '("Find lines" . consult-line)
-    "C-c f g" '("Grep files" . consult-ripgrep)
-    "C-c f b" '("List buffers" . consult-project-buffer)
-    "C-c f L" '("Go to line" . consult-goto-line)
-    ;; Embark
-    "C-." '("Embark act" . embark-act)
-    "C-," '("Embark dwin" . embark-dwim)
-    "C-/" '("Embark bindings" . embark-bindings))
-  (which-key-add-keymap-based-replacements corfu-map
-    ;; Corfu
-    "C-e" '("Abort completion menu" . corfu-quit)
-    "C-i" '("Trigger completion" . corfu-complete)
-    "C-y" '("Insert completion item" . corfu-insert))
-  (which-key-add-keymap-based-replacements typst-ts-mode-map
-    ;; Typst-ts-mode
-    "C-c C-c" '("Typst menu" . typst-ts-tmenu)))
-
 (use-package magit
   :ensure t)
 
@@ -210,15 +200,6 @@
 
 (use-package wgrep
   :ensure t)
-
-(use-package undo-fu
-  :ensure t
-  :demand t)
-
-(use-package undo-fu-session
-  :ensure t
-  :commands undo-fu-session-global-mode
-  :hook (after-init . undo-fu-session-global-mode))
 
 (use-package persist-text-scale
   :ensure t
@@ -298,6 +279,10 @@
   (read-extended-command-predicate #'command-completion-default-include-p)
   (text-mode-ispell-word-completion nil)
   (tab-always-indent 'complete)
+  :bind (:map corfu-map
+              ("C-e" . corfu-quit)
+              ("C-i" . corfu-complete)
+              ("C-y" . corfu-insert))
   :init
   (global-corfu-mode)
   (corfu-history-mode)
@@ -323,6 +308,9 @@
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
   (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+  :bind (("C-." . embark-act)
+	     ("C-," . embark-dwin)
+	     ("C-/" . embark-bindingsk))
   :config
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
@@ -332,7 +320,15 @@
 (use-package embark-consult
   :ensure t
   :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
+  (embark-collect-mode . consult-preview-at-point-mode)
+  :config
+  (which-key-add-keymap-based-replacements global-map
+    ;; Consult
+    "C-c f f" '("Find files" . consult-fd)
+    "C-c f l" '("Find lines" . consult-line)
+    "C-c f g" '("Grep files" . consult-ripgrep)
+    "C-c f b" '("List buffers" . consult-project-buffer)
+    "C-c f L" '("Go to line" . consult-goto-line)))
 
 (use-package consult
   :ensure t)
@@ -442,7 +438,11 @@
   (add-to-list 'auto-mode-alist '("\\.typ\\'" . typst-ts-mode))
   :custom
   (typst-ts-watch-options "--open")
-  (typst-ts-mode-enable-raw-blocks-highlight t))
+  (typst-ts-mode-enable-raw-blocks-highlight t)
+  :config
+  (which-key-add-keymap-based-replacements typst-ts-mode-map
+    ;; Typst-ts-mode
+    "C-c C-c" '("Typst menu" . typst-ts-tmenu)))
 
 (use-package org
   :ensure t
