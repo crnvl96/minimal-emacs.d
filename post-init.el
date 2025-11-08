@@ -149,17 +149,6 @@
   :commands undo-fu-session-global-mode
   :hook (after-init . undo-fu-session-global-mode))
 
-(use-package which-key
-  :ensure nil
-  :demand t
-  :commands which-key-mode
-  :hook (after-init . which-key-mode)
-  :config
-  (which-key-add-key-based-replacements
-    "C-x p" "Project"
-    "C-c ." "LSP"
-    "C-c f" "Find"))
-
 (use-package evil
   :ensure t
   :commands (evil-mode evil-define-key)
@@ -320,15 +309,7 @@
 (use-package embark-consult
   :ensure t
   :hook
-  (embark-collect-mode . consult-preview-at-point-mode)
-  :config
-  (which-key-add-keymap-based-replacements global-map
-    ;; Consult
-    "C-c f f" '("Find files" . consult-fd)
-    "C-c f l" '("Find lines" . consult-line)
-    "C-c f g" '("Grep files" . consult-ripgrep)
-    "C-c f b" '("List buffers" . consult-project-buffer)
-    "C-c f L" '("Go to line" . consult-goto-line)))
+  (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package consult
   :ensure t)
@@ -438,11 +419,7 @@
   (add-to-list 'auto-mode-alist '("\\.typ\\'" . typst-ts-mode))
   :custom
   (typst-ts-watch-options "--open")
-  (typst-ts-mode-enable-raw-blocks-highlight t)
-  :config
-  (which-key-add-keymap-based-replacements typst-ts-mode-map
-    ;; Typst-ts-mode
-    "C-c C-c" '("Typst menu" . typst-ts-tmenu)))
+  (typst-ts-mode-enable-raw-blocks-highlight t))
 
 (use-package org
   :ensure t
@@ -459,3 +436,24 @@
   (org-fontify-whole-heading-line t)
   (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t))
+
+(use-package which-key
+  :ensure nil
+  :demand t
+  :commands which-key-mode
+  :hook (after-init . which-key-mode)
+  :config
+  (which-key-add-key-based-replacements
+    "C-x p" "Project"
+    "C-c ." "LSP"
+    "C-c f" "Find")
+  (which-key-add-keymap-based-replacements global-map
+    ;; Consult
+    "C-c f f" '("Find files" . consult-fd)
+    "C-c f l" '("Find lines" . consult-line)
+    "C-c f g" '("Grep files" . consult-ripgrep)
+    "C-c f b" '("List buffers" . consult-project-buffer)
+    "C-c f L" '("Go to line" . consult-goto-line))
+  (which-key-add-keymap-based-replacements typst-ts-mode-map
+    ;; Typst-ts-mode
+    "C-c C-c" '("Typst menu" . typst-ts-tmenu)))
