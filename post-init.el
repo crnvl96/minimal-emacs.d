@@ -27,7 +27,11 @@
   (setq-default display-line-numbers-type 'relative)
   (set-face-attribute 'default nil :height 200 :weight 'normal :family "Berkeley Mono"))
 
+(use-package eww
+  :ensure nil)
+
 (use-package whitespace
+  :ensure nil
   :custom
   (whitespace-style '(face trailing empty))
   (whitespace-highlight-on-current-line t)
@@ -347,8 +351,10 @@
 	  (sit-for 0.75))))
 
 (add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
 (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+(add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode))
+
+(add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.m?js\\'" . js-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
 
@@ -362,7 +368,6 @@
   :hook ((python-ts-mode . lsp)
          (go-ts-mode . lsp)
          (lsp-mode . lsp-ui-mode)
-         (lsp-mode . lsp-lens-mode)
          (lsp-completion-mode . crnvl96/corfu-setup-lsp))
   :commands lsp
   :custom
@@ -391,7 +396,7 @@
   (setf (alist-get 'python-ts-mode apheleia-mode-alist)
         '(ruff-isort ruff))
   (setf (alist-get 'go-ts-mode apheleia-mode-alist)
-        '(gofumpt)))
+        '(gofmt)))
 
 (use-package flymake-ruff
   :ensure t
