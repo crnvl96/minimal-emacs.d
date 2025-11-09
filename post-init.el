@@ -1,12 +1,8 @@
 ;;; post-init.el -*- no-byte-compile: t; lexical-binding: t; -*-
 
-
 (use-package emacs
   :ensure nil
   :hook
-  (after-init . auto-save-visited-mode)
-  (after-init . tooltip-mode)
-  (after-init . delete-selection-mode)
   (after-init . global-hl-line-mode)
   (after-init . display-time-mode)
   (after-init . show-paren-mode)
@@ -17,17 +13,30 @@
   :custom
   ;; This setting can be used together with `use-package-report' to profile emacs startup time
   ;; (use-package-compute-statistics t)
-  (auto-save-visited-interval 5)
   (scroll-margin 8)
   (hscroll-margin 16)
   (dired-movement-style 'bounded-files)
-  (tooltip-hide-delay 20)
-  (tooltip-delay 0.4)
-  (tooltip-short-delay 0.08)
   (package-install-upgrade-built-in t)
   :config
   (setq-default display-line-numbers-type 'relative)
   (set-face-attribute 'default nil :height 200 :weight 'normal :family "Berkeley Mono"))
+
+(use-package delete-selection
+  :ensure nil
+  :hook (after-init . delete-selection-mode))
+
+(use-package auto-save-visited
+  :ensure nil
+  :hook (after-init . auto-save-visited-mode)
+  :custom (auto-save-visited-interval 5))
+
+(use-package tooltip
+  :ensure nil
+  :hook (after-init . tooltip-mode)
+  :custom
+  (tooltip-hide-delay 20)
+  (tooltip-delay 0.4)
+  (tooltip-short-delay 0.08))
 
 (use-package eww
   :ensure nil
@@ -153,8 +162,16 @@
 
 (use-package magit
   :ensure t
-  :commands magit
-  :bind ("C-x g" . magit))
+  :bind (("C-c g s" . magit-status)
+         ("C-c g i" . magit-init)
+         ("C-c g S" . magit-stage-file)
+         ("C-c g U" . magit-unstage-file)
+         ("C-c g b" . magit-blame-addition))
+  :custom
+  (magit-no-message '("Turning on magit-auto-revert-mode..."))
+  (magit-diff-refine-hunk t)
+  (magit-stage-all-confirm nil)
+  (magit-unstage-all-confirm nil))
 
 (use-package eat
   :ensure t
@@ -270,13 +287,14 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+
 (use-package consult
   :ensure t
   :bind (("C-c f f" . consult-fd)
-		 ("C-c f l" . consult-line)
-		 ("C-c f g" . consult-ripgrep)
-		 ("C-c f b" . consult-project-buffer)
-		 ("C-c f L" . consult-goto-line)))
+         ("C-c f l" . consult-line)
+         ("C-c f g" . consult-ripgrep)
+         ("C-c f b" . consult-project-buffer)
+         ("C-c f L" . consult-goto-line)))
 
 (setq treesit-language-source-alist
       ;; - Use `crnvl96/treesit-install-all-languages' to install all languages
@@ -410,4 +428,5 @@
   (which-key-add-key-based-replacements
 	"C-x p" "Project"
 	"C-c ." "LSP"
+	"C-c g" "Magit"
 	"C-c f" "Find"))
