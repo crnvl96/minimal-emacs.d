@@ -1,112 +1,11 @@
 ;;; post-init.el -*- no-byte-compile: t; lexical-binding: t; -*-
 
-(use-package emacs
-  :ensure nil
+(load-file "~/.emacs.d/core.el")
+
+(use-package editorconfig
+  :ensure t
   :hook
-  (after-init . global-hl-line-mode)
-  (after-init . display-time-mode)
-  (after-init . show-paren-mode)
-  (after-init . winner-mode)
-  (after-init . minibuffer-depth-indicate-mode)
-  ((prog-mode text-mode conf-mode) . display-line-numbers-mode)
-  (dired-mode . dired-hide-details-mode)
-  :custom
-  ;; This setting can be used together with `use-package-report' to profile emacs startup time
-  ;; (use-package-compute-statistics t)
-  (scroll-margin 8)
-  (hscroll-margin 16)
-  (dired-movement-style 'bounded-files)
-  (package-install-upgrade-built-in t)
-  :config
-  (setq-default display-line-numbers-type 'relative)
-  (set-face-attribute 'default nil :height 200 :weight 'normal :family "Berkeley Mono"))
-
-(use-package delete-selection
-  :ensure nil
-  :hook (after-init . delete-selection-mode))
-
-(use-package auto-save-visited
-  :ensure nil
-  :hook (after-init . auto-save-visited-mode)
-  :custom (auto-save-visited-interval 5))
-
-(use-package tooltip
-  :ensure nil
-  :hook (after-init . tooltip-mode)
-  :custom
-  (tooltip-hide-delay 20)
-  (tooltip-delay 0.4)
-  (tooltip-short-delay 0.08))
-
-(use-package eww
-  :ensure nil
-  :commands eww)
-
-(use-package whitespace
-  :ensure nil
-  :hook
-  (after-init . global-whitespace-mode)
-  :custom
-  (whitespace-style '(face trailing empty))
-  (whitespace-highlight-on-current-line t))
-
-(use-package savehist
-  :ensure nil
-  :hook
-  (after-init . savehist-mode)
-  :custom
-  (savehist-autosave-interval 600)
-  (savehist-additional-variables
-   '(kill-ring
-	 register-alist
-	 mark-ring global-mark-ring
-	 search-ring regexp-search-ring)))
-
-(use-package autorevert
-  :ensure nil
-  :hook
-  (after-init . global-auto-revert-mode)
-  :custom
-  (auto-revert-interval 3)
-  (auto-revert-remote-files nil)
-  (auto-revert-use-notify t)
-  (auto-revert-avoid-polling nil)
-  (auto-revert-verbose t))
-
-(use-package recentf
-  :ensure nil
-  :hook
-  (after-init . recentf-mode)
-  :custom
-  (recentf-auto-cleanup (if (daemonp) 300 'never))
-  (recentf-exclude
-   (list "\\.tar$" "\\.tbz2$" "\\.tbz$" "\\.tgz$" "\\.bz2$"
-		 "\\.bz$" "\\.gz$" "\\.gzip$" "\\.xz$" "\\.zip$"
-		 "\\.7z$" "\\.rar$"
-		 "COMMIT_EDITMSG\\'"
-		 "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
-		 "-autoloads\\.el$" "autoload\\.el$"))
-  :config
-  (add-hook 'kill-emacs-hook #'recentf-cleanup -90))
-
-(use-package saveplace
-  :ensure nil
-  :hook
-  (after-init . save-place-mode)
-  :custom
-  (save-place-limit 400))
-
-(use-package uniquify
-  :ensure nil
-  :custom
-  (uniquify-buffer-name-style 'reverse)
-  (uniquify-separator "•")
-  (uniquify-after-kill-buffer-p t))
-
-(use-package server
-  :ensure nil
-  :hook
-  (after-init . server-start))
+  (after-init . editorconfig-mode))
 
 (use-package ef-themes
   :ensure t
@@ -116,49 +15,48 @@
 
 (use-package undo-fu
   :ensure t
-  :demand t)
+  :demand t
+  :config
+  (global-unset-key (kbd "C-z"))
+  :bind (("C-z" . undo-fu-only-undo)
+         ("C-S-z" . undo-fu-only-redo)))
 
 (use-package undo-fu-session
   :ensure t
   :hook (after-init . undo-fu-session-global-mode))
 
-(use-package evil
+(use-package ace-window
   :ensure t
-  :init
-  (setq evil-undo-system 'undo-fu)
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll t)
-  :hook (after-init . evil-mode)
-  :custom
-  (evil-ex-visual-char-range t)
-  (evil-ex-search-vim-style-regexp t)
-  (evil-split-window-below t)
-  (evil-vsplit-window-right t)
-  (evil-echo-state nil)
-  (evil-move-cursor-back nil)
-  (evil-v$-excludes-newline t)
-  (evil-want-C-h-delete t)
-  (evil-want-C-u-delete t)
-  (evil-want-fine-undo t)
-  (evil-move-beyond-eol t)
-  (evil-search-wrap nil)
-  (evil-want-Y-yank-to-eol t))
+  :bind ("M-o" . ace-window))
 
-(use-package evil-collection
+(use-package avy
   :ensure t
-  :after evil
-  :init
-  (setq evil-collection-setup-minibuffer t)
+  :bind ("M-i" . avy-goto-char))
+
+(use-package easy-kill
+  :ensure t
+  :bind (([remap kill-ring-save] . easy-kill)
+         ([remap mark-sexp) . easy-mark)))
+
+(use-package crux
+  :ensure t
+  :bind (([remap move-beginning-of-line] . crux-move-beginning-of-line)
+         ([remap kill-whole-line] . crux-kill-whole-line)
+         ([remap keyboard-quit] . crux-keyboard-quit-dwin)
+         ("C-^" . crux-top-join-lines)
+         ("C-k" . crux-smart-kill-line)
+         ("S-<return>" . crux-smart-open-line)
+         ("C-S-<return>" . crux-smart-open-line-above)
+         ("C-c o" . crux-open-with)
+         ("C-c n" . crux-cleanup-buffer-or-region)
+         ("C-c r" . crux-recentf-find-file)
+         ("C-c R" . crux-recentf-find-directory)
+         ("C-c k" . crux-kill-other-buffers))
   :config
-  (evil-collection-init))
-
-(with-eval-after-load "evil"
-  (evil-define-operator crnvl96/evil-comment-or-uncomment (beg end)
-    "Toggle comment for the region between BEG and END."
-    (interactive "<r>")
-    (comment-or-uncomment-region beg end))
-  (evil-define-key 'normal 'global (kbd "gc") 'crnvl96/evil-comment-or-uncomment))
+  (crux-with-region-or-buffer crux-cleanup-buffer-or-region)
+  (crux-with-region-or-line comment-or-uncomment-region)
+  (crux-with-region-or-sexp-or-line kill-region)
+  (crux-with-region-or-point-to-eol kill-ring-save))
 
 (use-package magit
   :ensure t
@@ -419,14 +317,3 @@
   (org-fontify-whole-heading-line t)
   (org-fontify-quote-and-verse-blocks t)
   (org-startup-truncated t))
-
-(use-package which-key
-  :ensure nil
-  :commands which-key-mode
-  :hook (after-init . which-key-mode)
-  :config
-  (which-key-add-key-based-replacements
-	"C-x p" "Project"
-	"C-c ." "LSP"
-	"C-c g" "Magit"
-	"C-c f" "Find"))
