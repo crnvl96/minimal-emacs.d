@@ -1,5 +1,16 @@
 ;;; post-init.el -*- no-byte-compile: t; lexical-binding: t; -*-
 
+(unless (and (eq window-system 'mac)
+             (bound-and-true-p mac-carbon-version-string))
+  ;; Enables `pixel-scroll-precision-mode' on all operating systems and Emacs
+  ;; versions, except for emacs-mac.
+  ;;
+  ;; Enabling `pixel-scroll-precision-mode' is unnecessary with emacs-mac, as
+  ;; this version of Emacs natively supports smooth scrolling.
+  ;; https://bitbucket.org/mituharu/emacs-mac/commits/65c6c96f27afa446df6f9d8eff63f9cc012cc738
+  (setq pixel-scroll-precision-use-momentum nil)
+  (pixel-scroll-precision-mode 1))
+
 (use-package delight
   :ensure t)
 
@@ -16,6 +27,7 @@
   (emacs-lisp-mode "Elisp" :major)
   :hook
   ;; (after-init . global-display-line-numbers-mode)
+  ;; ((prog-mode text-mode conf-mode) . display-line-numbers-mode)
   (after-init . display-time-mode)
   (after-init . global-auto-revert-mode)
   (after-init . global-hl-line-mode)
@@ -25,12 +37,11 @@
   (after-init . savehist-mode)
   (after-init . show-paren-mode)
   (after-init . delete-selection-mode)
-  ;; ((prog-mode text-mode conf-mode) . display-line-numbers-mode)
   :custom
-  ;; This setting can be used together with `use-package-report' to profile emacs startup time
+  ;; Use with `use-package-report' to profile emacs startup time
   ;; (use-package-compute-statistics t)
-  (scroll-margin 8)
-  (hscroll-margin 16)
+  ;; (scroll-margin 8)
+  ;; (hscroll-margin 16)
   (whitespace-style '(face trailing empty))
   (whitespace-highlight-on-current-line t)
   (package-install-upgrade-built-in t)
@@ -158,13 +169,6 @@
   (completion-category-overrides '((file (styles partial-completion))))
   (completion-category-defaults nil))
 
-(defun crnvl96/corfu-enable-always-in-minibuffer ()
-  "Enable Corfu in the minibuffer if Vertico/Mct are not active."
-  (unless (or (bound-and-true-p mct--active)
-	          (bound-and-true-p vertico--input))
-    (setq-local corfu-auto nil)
-    (corfu-mode 1)))
-
 (use-package corfu
   :ensure t
   :hook
@@ -186,7 +190,14 @@
   :bind (:map corfu-map
 			  ("C-e" . corfu-quit)
 			  ("C-i" . corfu-complete)
-			  ("C-y" . corfu-insert)))
+			  ("C-y" . corfu-insert))
+  :config
+  (defun crnvl96/corfu-enable-always-in-minibuffer ()
+    "Enable Corfu in the minibuffer if Vertico/Mct are not active."
+    (unless (or (bound-and-true-p mct--active)
+	            (bound-and-true-p vertico--input))
+      (setq-local corfu-auto nil)
+      (corfu-mode 1))))
 
 (use-package cape
   :ensure t
@@ -286,12 +297,6 @@
   (setf (alist-get 'go-ts-mode apheleia-mode-alist)
 		'(gofmt)))
 
-(defun crnvl96/corfu-setup-lsp ()
-  "Use orderless and corfu completion style with lsp-capf instead of the
-  default lsp-passthrough."
-  (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-	    '(orderless)))
-
 (use-package lsp-mode
   :ensure t
   :commands lsp
@@ -303,7 +308,13 @@
   (lsp-keymap-prefix "C-c .")
   (lsp-headerline-breadcrumb-enable nil)
   (lsp-semantic-tokens-enable nil)
-  (lsp-enable-symbol-highlighting nil))
+  (lsp-enable-symbol-highlighting nil)
+  :config
+  (defun crnvl96/corfu-setup-lsp ()
+    "Use orderless and corfu completion style with lsp-capf instead of the
+  default lsp-passthrough."
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+	      '(orderless))))
 
 (use-package lsp-ui
   :ensure t
@@ -377,4 +388,3 @@
   (org-agenda-finalize . org-modern-agenda)
   :config
   (set-face-attribute 'org-modern-symbol nil :height 220 :weight 'normal :family "Iosevka"))
-
