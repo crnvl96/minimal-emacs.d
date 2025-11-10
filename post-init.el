@@ -1,16 +1,5 @@
 ;;; post-init.el -*- no-byte-compile: t; lexical-binding: t; -*-
 
-(unless (and (eq window-system 'mac)
-             (bound-and-true-p mac-carbon-version-string))
-  ;; Enables `pixel-scroll-precision-mode' on all operating systems and Emacs
-  ;; versions, except for emacs-mac.
-  ;;
-  ;; Enabling `pixel-scroll-precision-mode' is unnecessary with emacs-mac, as
-  ;; this version of Emacs natively supports smooth scrolling.
-  ;; https://bitbucket.org/mituharu/emacs-mac/commits/65c6c96f27afa446df6f9d8eff63f9cc012cc738
-  (setq pixel-scroll-precision-use-momentum nil)
-  (pixel-scroll-precision-mode 1))
-
 (use-package delight
   :ensure t)
 
@@ -37,6 +26,7 @@
   (after-init . savehist-mode)
   (after-init . show-paren-mode)
   (after-init . delete-selection-mode)
+  (after-init . which-key-mode)
   :custom
   ;; Use with `use-package-report' to profile emacs startup time
   ;; (use-package-compute-statistics t)
@@ -49,30 +39,27 @@
   :config
   ;; (setq-default display-line-numbers-type 'relative)
   (add-hook 'kill-emacs-hook #'recentf-cleanup -90)
+
   (set-face-attribute 'default nil :height 220 :weight 'normal :family "Iosevka")
-  (set-face-attribute 'variable-pitch nil :height 220 :weight 'normal :family "Iosevka Aile"))
+  (set-face-attribute 'variable-pitch nil :height 220 :weight 'normal :family "Iosevka Aile")
 
-(use-package eww
-  :ensure nil
-  :commands eww)
+  (unless (and (eq window-system 'mac)
+               (bound-and-true-p mac-carbon-version-string))
+    ;; Enables `pixel-scroll-precision-mode' on all operating systems and Emacs
+    ;; versions, except for emacs-mac.
+    ;;
+    ;; Enabling `pixel-scroll-precision-mode' is unnecessary with emacs-mac, as
+    ;; this version of Emacs natively supports smooth scrolling.
+    ;; https://bitbucket.org/mituharu/emacs-mac/commits/65c6c96f27afa446df6f9d8eff63f9cc012cc738
+    (setq pixel-scroll-precision-use-momentum nil)
+    (pixel-scroll-precision-mode 1))
 
-(use-package which-key
-  :ensure nil
-  :delight
-  :hook (after-init . which-key-mode)
-  :config
   (which-key-add-key-based-replacements
     "C-x p" "Project"
     "C-c ." "LSP"
     "C-c g" "Magit"
     "C-c f" "Find")
-  :bind
-  ("M-n" . forward-paragraph)
-  ("M-p" . backward-paragraph))
 
-(use-package treesit
-  :ensure nil
-  :config
   (setq treesit-language-source-alist
         ;; - Use `crnvl96/treesit-install-all-languages' to install all languages
         ;; - Use `treesit-install-language-grammar' to install a specific language
@@ -109,7 +96,10 @@
   (add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.m?js\\'" . js-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode)))
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+  :bind
+  ("M-n" . forward-paragraph)
+  ("M-p" . backward-paragraph))
 
 ;; (use-package ace-window
 ;;   :ensure t
