@@ -15,8 +15,8 @@
   (modus-themes-prompts '(bold))
   (modus-themes-headings)
   '((agenda-structure . (variable-pitch light 1.2))
-   (agenda-date . (variable-pitch regular 1.3))
-   (t . (regular 1.15)))
+    (agenda-date . (variable-pitch regular 1.3))
+    (t . (regular 1.15)))
   (setq modus-themes-common-palette-overrides nil))
 
 (use-package doric-themes
@@ -208,13 +208,6 @@
   (after-init . corfu-popupinfo-mode)
   (minibuffer-setup . crnvl96/corfu-enable-always-in-minibuffer)
   :custom
-  (corfu-cycle t)
-  (corfu-preview-current t)
-
-  (corfu-auto nil)
-  (corfu-quit-at-boundary nil)
-  (corfu-quit-no-match nil)
-
   (read-extended-command-predicate #'command-completion-default-include-p)
   (text-mode-ispell-word-completion nil)
   (tab-always-indent 'complete)
@@ -236,7 +229,9 @@
   :init
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-symbol))
+  (add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  (add-hook 'completion-at-point-functions #'cape-dabbrev))
 
 (use-package embark
   :ensure t
