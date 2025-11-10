@@ -3,6 +3,28 @@
 (use-package delight
   :ensure t)
 
+(use-package modus-themes
+  :ensure t
+  :custom
+  (modus-themes-to-rotate modus-themes-items)
+  (modus-themes-mixed-fonts t)
+  (modus-themes-variable-pitch-ui t)
+  (modus-themes-italic-constructs t)
+  (modus-themes-bold-constructs t)
+  (modus-themes-completions '((t . (bold))))
+  (modus-themes-prompts '(bold))
+  (modus-themes-headings)
+  '((agenda-structure . (variable-pitch light 1.2))
+   (agenda-date . (variable-pitch regular 1.3))
+   (t . (regular 1.15)))
+  (setq modus-themes-common-palette-overrides nil))
+
+(use-package doric-themes
+  :ensure t)
+
+(use-package standard-themes
+  :ensure t)
+
 (use-package ef-themes
   :ensure t
   :config
@@ -30,6 +52,8 @@
   :config
   (set-face-attribute 'default nil :height 220 :weight 'normal :family "Iosevka")
   (set-face-attribute 'variable-pitch nil :height 220 :weight 'normal :family "Iosevka Aile")
+  (with-eval-after-load "org-mode"
+    (set-face-attribute 'org-modern-symbol nil :height 220 :weight 'normal :family "Iosevka"))
   (unless (and (eq window-system 'mac)
                (bound-and-true-p mac-carbon-version-string))
     (setq pixel-scroll-precision-use-momentum nil)
@@ -122,10 +146,6 @@
   (add-to-list 'auto-mode-alist '("\\.m?js\\'" . js-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode)))
 
-;; (use-package ace-window
-;;   :ensure t
-;;   :bind ("M-o" . ace-window))
-
 (use-package avy
   :ensure t
   :bind ("M-i" . avy-goto-char-2))
@@ -162,24 +182,6 @@
   (crux-with-region-or-line comment-or-uncomment-region)
   (crux-with-region-or-sexp-or-line kill-region)
   (crux-with-region-or-point-to-eol kill-ring-save))
-
-;; (use-package popper
-;;   :ensure t
-;;   :hook
-;;   (after-init . popper-mode)
-;;   (after-init . popper-echo-mode)
-;;   :custom
-;;   (popper-reference-buffers
-;;    '("\\*Messages\\*"
-;;      "Output\\*$"
-;;      "\\*Compilation\\*"
-;;      "\\*Async Shell Command\\*"
-;;      helpful-mode
-;;      help-mode
-;;      compilation-mode))
-;;   :bind (("C-5"   . popper-toggle)
-;;          ("M-5"   . popper-cycle)
-;;          ("C-M-5" . popper-toggle-type)))
 
 (use-package marginalia
   :ensure t
@@ -257,7 +259,8 @@
 
 (use-package consult
   :ensure t
-  :bind (("C-c f f" . consult-fd)
+  :bind (("C-c b" . consult-buffer)
+         ("C-c f f" . consult-fd)
          ("C-c f l" . consult-line)
          ("C-c f g" . consult-ripgrep)
          ("C-c f b" . consult-project-buffer)
@@ -417,6 +420,4 @@
   :ensure t
   :hook
   (org-mode . org-modern-mode)
-  (org-agenda-finalize . org-modern-agenda)
-  :config
-  (set-face-attribute 'org-modern-symbol nil :height 220 :weight 'normal :family "Iosevka"))
+  (org-agenda-finalize . org-modern-agenda))
