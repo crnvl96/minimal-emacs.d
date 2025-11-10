@@ -13,6 +13,8 @@
   :ensure nil
   :delight
   (eldoc-mode)
+  (which-key-mode)
+  (global-whitespace-mode)
   (emacs-lisp-mode "Elisp" :major)
   :hook
   ;; (after-init . global-display-line-numbers-mode)
@@ -141,6 +143,23 @@
   (crux-with-region-or-line comment-or-uncomment-region)
   (crux-with-region-or-sexp-or-line kill-region)
   (crux-with-region-or-point-to-eol kill-ring-save))
+
+(use-package popper
+  :ensure t
+  :hook
+  (after-init . popper-mode)
+  (after-init . popper-echo-mode)
+  :custom
+  (popper-reference-buffers
+   '("\\*Messages\\*"
+     "Output\\*$"
+     "\\*Async Shell Command\\*"
+     helpful-mode
+     help-mode
+     compilation-mode))
+  :bind (("C-5"   . popper-toggle)
+         ("M-5"   . popper-cycle)
+         ("C-M-5" . popper-toggle-type)))
 
 (use-package marginalia
   :ensure t
