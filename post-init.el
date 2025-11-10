@@ -9,59 +9,81 @@
   (mapc #'disable-theme custom-enabled-themes)
   (load-theme 'ef-elea-dark t))
 
+(use-package all-the-icons
+  :if (display-graphic-p))
+
 (use-package emacs
   :ensure nil
   :delight
   (eldoc-mode)
-  (which-key-mode)
-  (global-whitespace-mode)
   (emacs-lisp-mode "Elisp" :major)
   :hook
-  ;; (after-init . global-display-line-numbers-mode)
-  ;; ((prog-mode text-mode conf-mode) . display-line-numbers-mode)
+  (after-init . global-display-line-numbers-mode)
   (after-init . display-time-mode)
-  (after-init . global-auto-revert-mode)
   (after-init . global-hl-line-mode)
-  (after-init . global-whitespace-mode)
-  (after-init . recentf-mode)
-  (after-init . save-place-mode)
+  (after-init . winner-mode)
   (after-init . savehist-mode)
   (after-init . show-paren-mode)
   (after-init . delete-selection-mode)
-  (after-init . which-key-mode)
   :custom
-  ;; Use with `use-package-report' to profile emacs startup time
-  ;; (use-package-compute-statistics t)
-  ;; (scroll-margin 8)
-  ;; (hscroll-margin 16)
-  (whitespace-style '(face trailing empty))
-  (whitespace-highlight-on-current-line t)
   (package-install-upgrade-built-in t)
-  (save-place-limit 150)
   :config
-  ;; (setq-default display-line-numbers-type 'relative)
-  (add-hook 'kill-emacs-hook #'recentf-cleanup -90)
-
   (set-face-attribute 'default nil :height 220 :weight 'normal :family "Iosevka")
   (set-face-attribute 'variable-pitch nil :height 220 :weight 'normal :family "Iosevka Aile")
-
   (unless (and (eq window-system 'mac)
                (bound-and-true-p mac-carbon-version-string))
-    ;; Enables `pixel-scroll-precision-mode' on all operating systems and Emacs
-    ;; versions, except for emacs-mac.
-    ;;
-    ;; Enabling `pixel-scroll-precision-mode' is unnecessary with emacs-mac, as
-    ;; this version of Emacs natively supports smooth scrolling.
-    ;; https://bitbucket.org/mituharu/emacs-mac/commits/65c6c96f27afa446df6f9d8eff63f9cc012cc738
     (setq pixel-scroll-precision-use-momentum nil)
     (pixel-scroll-precision-mode 1))
+  :bind
+  ("M-n" . forward-paragraph)
+  ("M-p" . backward-paragraph))
 
+(use-package autorevert
+  :ensure nil
+  :hook (after-init . global-auto-revert-mode)
+  :custom
+  (auto-revert-interval 3)
+  (auto-revert-remote-files nil)
+  (auto-revert-use-notify t)
+  (auto-revert-avoid-polling nil)
+  (auto-revert-verbose t))
+
+(use-package recentf
+  :ensure nil
+  :hook (after-init . recentf-mode)
+  :config
+  (add-hook 'kill-emacs-hook #'recentf-cleanup -90))
+
+(use-package whitespace
+  :ensure nil
+  :delight
+  (whitespace-mode)
+  (global-whitespace-mode)
+  :hook (after-init . global-whitespace-mode)
+  :custom
+  (whitespace-style '(face trailing empty))
+  (whitespace-highlight-on-current-line t))
+
+(use-package saveplace
+  :ensure nil
+  :hook (after-init . save-place-mode)
+  :custom
+  (save-place-limit 150))
+
+(use-package which-key
+  :ensure nil
+  :delight
+  :hook (after-init . which-key-mode)
+  :config
   (which-key-add-key-based-replacements
     "C-x p" "Project"
     "C-c ." "LSP"
     "C-c g" "Magit"
-    "C-c f" "Find")
+    "C-c f" "Find"))
 
+(use-package treesit
+  :ensure nil
+  :config
   (setq treesit-language-source-alist
         ;; - Use `crnvl96/treesit-install-all-languages' to install all languages
         ;; - Use `treesit-install-language-grammar' to install a specific language
@@ -98,10 +120,7 @@
   (add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.m?js\\'" . js-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
-  :bind
-  ("M-n" . forward-paragraph)
-  ("M-p" . backward-paragraph))
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode)))
 
 ;; (use-package ace-window
 ;;   :ensure t
@@ -144,22 +163,23 @@
   (crux-with-region-or-sexp-or-line kill-region)
   (crux-with-region-or-point-to-eol kill-ring-save))
 
-(use-package popper
-  :ensure t
-  :hook
-  (after-init . popper-mode)
-  (after-init . popper-echo-mode)
-  :custom
-  (popper-reference-buffers
-   '("\\*Messages\\*"
-     "Output\\*$"
-     "\\*Async Shell Command\\*"
-     helpful-mode
-     help-mode
-     compilation-mode))
-  :bind (("C-5"   . popper-toggle)
-         ("M-5"   . popper-cycle)
-         ("C-M-5" . popper-toggle-type)))
+;; (use-package popper
+;;   :ensure t
+;;   :hook
+;;   (after-init . popper-mode)
+;;   (after-init . popper-echo-mode)
+;;   :custom
+;;   (popper-reference-buffers
+;;    '("\\*Messages\\*"
+;;      "Output\\*$"
+;;      "\\*Compilation\\*"
+;;      "\\*Async Shell Command\\*"
+;;      helpful-mode
+;;      help-mode
+;;      compilation-mode))
+;;   :bind (("C-5"   . popper-toggle)
+;;          ("M-5"   . popper-cycle)
+;;          ("C-M-5" . popper-toggle-type)))
 
 (use-package marginalia
   :ensure t
@@ -187,24 +207,25 @@
   (minibuffer-setup . crnvl96/corfu-enable-always-in-minibuffer)
   :custom
   (corfu-cycle t)
-  (corfu-preselect nil)
+  (corfu-preview-current t)
+
   (corfu-auto nil)
   (corfu-quit-at-boundary nil)
   (corfu-quit-no-match nil)
-  (corfu-preview-current t)
-  (corfu-on-exact-match nil)
+
   (read-extended-command-predicate #'command-completion-default-include-p)
   (text-mode-ispell-word-completion nil)
   (tab-always-indent 'complete)
   :bind (:map corfu-map
-			  ("C-e" . corfu-quit)
-			  ("C-i" . corfu-complete)
-			  ("C-y" . corfu-insert))
+              ("RET" . nil)
+              ("C-e" . corfu-quit)
+              ("C-i" . corfu-complete)
+              ("C-y" . corfu-insert))
   :config
   (defun crnvl96/corfu-enable-always-in-minibuffer ()
     "Enable Corfu in the minibuffer if Vertico/Mct are not active."
     (unless (or (bound-and-true-p mct--active)
-	            (bound-and-true-p vertico--input))
+                (bound-and-true-p vertico--input))
       (setq-local corfu-auto nil)
       (corfu-mode 1))))
 
@@ -222,12 +243,12 @@
   (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
   :config
   (add-to-list 'display-buffer-alist
-			   '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-			     nil
-			     (window-parameters (mode-line-format . none))))
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none))))
   :bind (("C-." . embark-act)
-		 ("C-," . embark-dwin)
-		 ("C-/" . embark-bindingsk)))
+         ("C-," . embark-dwin)
+         ("C-/" . embark-bindingsk)))
 
 (use-package embark-consult
   :ensure t
@@ -282,11 +303,11 @@
 (use-package helpful
   :ensure t
   :commands (helpful-callable
-			 helpful-variable
-			 helpful-key
-			 helpful-command
-			 helpful-at-point
-			 helpful-function)
+             helpful-variable
+             helpful-key
+             helpful-command
+             helpful-at-point
+             helpful-function)
   :custom
   (helpful-max-buffers 3)
   :bind
@@ -302,16 +323,16 @@
   :hook ((prog-mode . apheleia-mode))
   :config
   (setf (alist-get 'python-ts-mode apheleia-mode-alist)
-		'(ruff-isort ruff))
+        '(ruff-isort ruff))
   (setf (alist-get 'go-ts-mode apheleia-mode-alist)
-		'(gofmt)))
+        '(gofmt)))
 
 (use-package lsp-mode
   :ensure t
   :commands lsp
   :hook ((go-ts-mode . lsp-deferred)
-		 (lsp-mode . lsp-ui-mode)
-		 (lsp-completion-mode . crnvl96/corfu-setup-lsp))
+         (lsp-mode . lsp-ui-mode)
+         (lsp-completion-mode . crnvl96/corfu-setup-lsp))
   :custom
   (lsp-completion-provider :none)
   (lsp-keymap-prefix "C-c .")
@@ -323,7 +344,7 @@
     "Use orderless and corfu completion style with lsp-capf instead of the
   default lsp-passthrough."
     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-	      '(orderless))))
+          '(orderless))))
 
 (use-package lsp-ui
   :ensure t
@@ -350,12 +371,12 @@
 (use-package markdown-mode
   :ensure t
   :commands (gfm-mode
-			 gfm-view-mode
-			 markdown-mode
-			 markdown-view-mode)
+             gfm-view-mode
+             markdown-mode
+             markdown-view-mode)
   :mode (("\\.markdown\\'" . markdown-mode)
-		 ("\\.md\\'" . markdown-mode)
-		 ("README\\.md\\'" . gfm-mode)))
+         ("\\.md\\'" . markdown-mode)
+         ("README\\.md\\'" . gfm-mode)))
 
 (use-package typst-ts-mode
   :ensure t
@@ -364,10 +385,12 @@
   (typst-ts-watch-options "--open")
   (typst-ts-mode-enable-raw-blocks-highlight t)
   :bind (:map typst-ts-mode-map
-			  ("C-c C-c" . typst-ts-menu)))
+              ("C-c C-c" . typst-ts-menu)))
 
 (use-package org
   :ensure t
+  :delight
+  (org-indent-mode "" "org-indent")
   :commands (org-mode org-version)
   :mode (("\\.org\\'" . org-mode))
   :custom
