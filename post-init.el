@@ -103,7 +103,9 @@
     "C-x p" "Project"
     "C-c ." "LSP"
     "C-c g" "Magit"
-    "C-c f" "Find"))
+    "C-c c" "Crux"
+    "C-c f" "Find"
+    "C-c c n" "Cleanup Buffer and trim whitespaces"))
 
 (use-package treesit
   :ensure nil
@@ -146,6 +148,10 @@
   (add-to-list 'auto-mode-alist '("\\.m?js\\'" . js-ts-mode))
   (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode)))
 
+(use-package ace-window
+  :ensure t
+  :bind ("M-o" . ace-window))
+
 (use-package avy
   :ensure t
   :bind ("M-i" . avy-goto-char-2))
@@ -171,13 +177,13 @@
          ("C-k" . crux-smart-kill-line)
          ("S-<return>" . crux-smart-open-line)
          ("C-S-<return>" . crux-smart-open-line-above)
-         ("C-c x" . crux-transpose-windows)
-         ("C-c o" . crux-open-with)
-         ("C-c d" . crux-duplicate-current-line-or-region)
-         ("C-c n" . crux-cleanup-buffer-or-region)
-         ("C-c r" . crux-recentf-find-file)
-         ("C-c R" . crux-recentf-find-directory)
-         ("C-c k" . crux-kill-other-buffers))
+         ("C-c c x" . crux-transpose-windows)
+         ("C-c c o" . crux-open-with)
+         ("C-c c d" . crux-duplicate-current-line-or-region)
+         ("C-c c n" . crux-cleanup-buffer-or-region)
+         ("C-c c r" . crux-recentf-find-file)
+         ("C-c c R" . crux-recentf-find-directory)
+         ("C-c c k" . crux-kill-other-buffers))
   :config
   (crux-with-region-or-line comment-or-uncomment-region)
   (crux-with-region-or-sexp-or-line kill-region)
@@ -386,33 +392,23 @@
               ("C-c C-c" . typst-ts-menu)))
 
 (use-package org
-  :ensure t
+  :ensure nil
   :delight
   (org-indent-mode "" "org-indent")
   :commands (org-mode org-version)
   :mode (("\\.org\\'" . org-mode))
+  :hook (org-mode . org-indent-mode)
   :custom
-  (org-hide-leading-stars t)
-  (org-startup-indented t)
-  (org-adapt-indentation nil)
-  (org-edit-src-content-indentation 0)
-  (org-fontify-done-headline t)
-  (org-fontify-todo-headline t)
-  (org-fontify-whole-heading-line t)
-  (org-fontify-quote-and-verse-blocks t)
-  (org-auto-align-tags nil)
-  (org-tags-column 0)
-  (org-catch-invisible-edits 'show-and-error)
-  (org-special-ctrl-a/e t)
-  (org-insert-heading-respect-content t)
-  (org-hide-emphasis-markers t)
-  (org-pretty-entities t)
-  (org-agenda-tags-column 0)
-  (org-ellipsis "…")
-  (org-startup-truncated t))
+  (org-log-done 'time)
+  (org-log-into-drawer t)
+  (org-agenda-files '("~/Developer/personal/notes/agenda/tasks.org"))
+  (org-todo-keywords
+   '((sequence "TODO(t)" "WAIT(w!)" "|" "CANCEL(c!)" "DONE(d!)")))
+  :bind
+  ("C-c a" . org-agenda))
 
-(use-package org-modern
+(use-package org-journal
   :ensure t
-  :hook
-  (org-mode . org-modern-mode)
-  (org-agenda-finalize . org-modern-agenda))
+  :custom
+  (org-journal-dir "~/Developer/personal/notes/journal")
+  (org-journal-date-format "%A, %d %B %Y"))
