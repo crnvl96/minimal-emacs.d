@@ -204,6 +204,7 @@
   (add-to-list 'super-save-hook-triggers 'find-file-hook))
 
 (use-package undo-fu
+  :demand t
   :ensure t
   :commands (undo-fu-only-undo
              undo-fu-only-redo
