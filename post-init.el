@@ -7,7 +7,6 @@
 (use-package delight
   :ensure t)
 
-;; Theme package
 (use-package modus-themes
   :ensure t
   :custom
@@ -32,6 +31,9 @@
   (completion-ignore-case t)
   (compile-command nil)
   :config
+  ;; We're currently using `'super-save-mode'
+  (setq auto-save-default nil)
+
   ;; Fonts definition ---
   (set-face-attribute 'default nil :height 220 :weight 'normal :family "Iosevka")
   (set-face-attribute 'variable-pitch nil :height 220 :weight 'normal :family "Iosevka Aile")
@@ -50,11 +52,6 @@
   :ensure nil
   :hook
   (after-init . savehist-mode))
-
-(use-package paren
-  :ensure nil
-  :hook
-  (after-init . show-paren-mode))
 
 (use-package display-line-numbers
   :ensure nil
@@ -115,8 +112,8 @@
 
 (use-package flymake
   :ensure nil
-  :bind (("C-c . ]" . flymake-goto-next-error)
-         ("C-c . [" . flymake-goto-prev-error)))
+  :bind (("C-}" . flymake-goto-next-error)
+         ("C-{" . flymake-goto-prev-error)))
 
 (use-package which-key
   :ensure nil
@@ -125,11 +122,8 @@
   :config
   (which-key-add-key-based-replacements
     "C-x p" "Project"
-    "C-c ." "LSP"
-    "C-c g" "Magit"
     "C-c c" "Crux"
-    "C-c f" "Find"
-    "C-c c n" "Cleanup Buffer and trim whitespaces"))
+    "C-c f" "Find"))
 
 (use-package treesit
   :ensure nil
@@ -163,14 +157,14 @@
       (dolist (lang languages)
         (treesit-install-language-grammar lang)
         (message "`%s' parser was installed." lang)
-        (sit-for 0.75)))))
+        (sit-for 0.75))))
 
-(add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
-(add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
-(add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.m?js\\'" . js-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.m?js\\'" . js-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode)))
 
 (use-package ace-window
   :ensure t
@@ -189,6 +183,42 @@
   :ensure t
   :bind (("C-=" . er/expand-region)))
 
+(use-package smartparens
+  :ensure t
+  :hook (prog-mode text-mode markdown-mode)
+  :config
+  (require 'smartparens-config))
+
+(use-package super-save
+  :ensure t
+  :hook
+  (after-init . super-save-mode)
+  :custom
+  (super-save-auto-save-when-idle t)
+  (super-save-delete-trailing-whitespace t)
+  (super-save-all-buffers t)
+  :config
+  ;; add integration with ace-window
+  (add-to-list 'super-save-triggers 'ace-window)
+  ;; save on find-file
+  (add-to-list 'super-save-hook-triggers 'find-file-hook))
+
+(use-package undo-fu
+  :ensure t
+  :commands (undo-fu-only-undo
+             undo-fu-only-redo
+             undo-fu-only-redo-all
+             undo-fu-disable-checkpoint)
+  :config
+  (global-unset-key (kbd "C-z"))
+  (global-set-key (kbd "C-z") 'undo-fu-only-undo)
+  (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
+
+(use-package undo-fu-session
+  :ensure t
+  :commands undo-fu-session-global-mode
+  :hook (after-init . undo-fu-session-global-mode))
+
 (use-package crux
   :demand t
   :bind (([remap move-beginning-of-line] . crux-move-beginning-of-line)
@@ -197,14 +227,14 @@
          ([remap upcase-region] . crux-upcase-region)
          ([remap downcase-region] . crux-downcase-region)
          ("C-S-j" . crux-top-join-line)
+         ("C-S-n" . crux-cleanup-buffer-or-region)
+         ("C-S-t" . crux-visit-term-buffer)
+         ("C-S-d" . crux-duplicate-current-line-or-region)
          ("C-k" . crux-smart-kill-line)
          ("S-<return>" . crux-smart-open-line)
          ("C-S-<return>" . crux-smart-open-line-above)
          ("C-c c o" . crux-open-with)
          ("C-c c u" . crux-view-url)
-         ("C-c c t" . crux-visit-term-buffer)
-         ("C-c c d" . crux-duplicate-current-line-or-region)
-         ("C-c c n" . crux-cleanup-buffer-or-region)
          ("C-c c k" . crux-kill-other-buffers))
   :config
   (crux-with-region-or-line comment-or-uncomment-region)
@@ -232,21 +262,22 @@
   :custom
   (completion-styles '(orderless partial-completion basic))
   (completion-category-defaults nil)
-  (completion-category-overrides nil))
+  (setq completion-category-overrides '((eglot (styles orderless))
+                                        (eglot-capf (styles orderless)))))
 
 (use-package corfu
   :ensure t
   :hook
   (after-init . global-corfu-mode)
   (after-init . corfu-history-mode)
-  (after-init . corfu-popupinfo-mode)
+  ;; (after-init . corfu-popupinfo-mode)
   (minibuffer-setup . my/corfu-enable-always-in-minibuffer)
   :custom
   (corfu-cycle t)
-  (corfu-auto t)
-  (corfu-auto-prefix 2)
-  (corfu-auto-delay 0.1)
-  (corfu-popupinfo-delay '(0.5 . 0.5))
+  ;; (corfu-auto nil)
+  ;; (corfu-auto-prefix 2)
+  ;; (corfu-auto-delay 0.1)
+  ;; (corfu-popupinfo-delay '(0.5 . 0.5))
   (read-extended-command-predicate #'command-completion-default-include-p)
   (text-mode-ispell-word-completion nil)
   (tab-always-indent 'complete)
@@ -257,12 +288,12 @@
               ("M-j" . corfu-info-documentation)
               ("C-k" . corfu-previous)
               ("M-k" . corfu-info-location)
-              ("C-y" . corfu-insert)
-              ("C-n" . corfu-quit)
-              ("C-p" . corfu-quit)
-              ("RET" . corfu-quit))
+              ("C-y" . corfu-insert))
+  ;; ("C-n" . corfu-quit)
+  ;; ("C-p" . corfu-quit)
+  ;; ("RET" . corfu-quit))
   :config
-  (keymap-unset corfu-map "RET")
+  ;; (keymap-unset corfu-map "RET")
   (defun my/corfu-enable-always-in-minibuffer ()
     "Enable Corfu in the minibuffer if Vertico/Mct are not active."
     (unless (or (bound-and-true-p mct--active)
@@ -290,8 +321,8 @@
                  nil
                  (window-parameters (mode-line-format . none))))
   :bind (("C-." . embark-act)
-         ("C-," . embark-dwin)
-         ("C-/" . embark-bindingsk)))
+         ("C-," . embark-dwim)
+         ("C-'" . embark-bindings)))
 
 (use-package embark-consult
   :ensure t
@@ -303,15 +334,30 @@
   :ensure t
   :custom
   (consult-async-min-input 2)
-  :bind (("C-c b" . consult-buffer)
-         ("C-c y" . consult-yank-pop)
+  :bind (("C-c f b" . consult-buffer)
+         ("C-c f y" . consult-yank-pop)
          ("C-c f f" . consult-fd)
-         ("C-c f s" . consult-outline)
+         ("C-c f o" . consult-outline)
+         ("C-c f i" . consult-imenu)
+         ("C-c f I" . consult-info)
+         ("C-c f k" . consult-flymake)
+         ("C-c f h" . consult-history)
+         ("C-c f u" . consult-focus-lines)
          ("C-c f l" . consult-line)
          ("C-c f g" . consult-ripgrep)
-         ("C-c f b" . consult-project-buffer)
          ("C-c f L" . consult-goto-line))
   :config
+  (setq consult-narrow-key "<")
+
+  (consult-customize
+   consult-buffer consult-yank-pop consult-fd consult-outline
+   consult-imenu consult-info consult-flymake consult-history
+   consult-focus-lines consult-line consult-ripgrep consult-goto-line
+   :preview-key nil)
+
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+
   (defun consult--orderless-regexp-compiler (input type &rest _config)
     (setq input (cdr (orderless-compile input)))
     (cons
@@ -320,7 +366,6 @@
 
   (setq consult--regexp-compiler #'consult--orderless-regexp-compiler))
 
-
 (use-package magit
   :ensure t)
 
@@ -328,18 +373,6 @@
   :ensure t
   :hook
   (after-init . editorconfig-mode))
-
-(use-package undo-fu
-  :ensure t
-  :demand t
-  :config
-  (global-unset-key (kbd "C-z"))
-  :bind (("C-z" . undo-fu-only-undo)
-         ("C-S-z" . undo-fu-only-redo)))
-
-(use-package undo-fu-session
-  :ensure t
-  :hook (after-init . undo-fu-session-global-mode))
 
 (use-package eat
   :ensure t
@@ -383,50 +416,33 @@
   (setf (alist-get 'python-ts-mode apheleia-mode-alist)
         '(ruff-isort ruff))
   (setf (alist-get 'go-ts-mode apheleia-mode-alist)
-        '(gofmt)))
+        '(gofumpt)))
 
-(use-package lsp-mode
-  :ensure t
-  :commands lsp
-  :hook ((go-ts-mode . lsp-deferred)
-         (lsp-mode . lsp-ui-mode)
-         (lsp-completion-mode . my/lsp-mode-setup-completion))
-  :custom
-  (lsp-completion-provider :none)
-  (lsp-keymap-prefix "C-c .")
-  (lsp-headerline-breadcrumb-enable nil)
-  (lsp-semantic-tokens-enable nil)
-  (lsp-enable-symbol-highlighting nil)
+(use-package eglot
+  :ensure nil
+  :hook
+  ((python-ts-mode go-ts-mode) . eglot-ensure)
   :config
-  (defun my/orderless-dispatch-flex-first (_pattern index _total)
-    (and (eq index 0) 'orderless-flex))
-  (defun my/lsp-mode-setup-completion ()
-    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-          '(orderless))
-    (add-hook 'orderless-style-dispatchers #'my/orderless-dispatch-flex-first nil 'local)
-    (setq-local completion-at-point-functions (list (cape-capf-buster #'lsp-completion-at-point)))))
+  (setq eglot-server-programs
+        '((python-ts-mode . ("pyright-langserver" "--stdio"))
+          (go-ts-mode . ("gopls"))))
+  (setq-default eglot-workspace-configuration
+                '(
+                  :pyright (:disableOrganizeImports t)
+                  :python.analysis (:autoSearchPaths t :useLibraryCodeForTypes t :diagnosticMode "openFilesOnly")
+                  :gopls (:gofumpt t)))
+  (defun my/eglot-capf ()
+    (setq-local completion-at-point-functions
+                (list (cape-capf-super
+                       #'eglot-completion-at-point))))
+  (add-hook 'eglot-managed-mode-hook #'my/eglot-capf)
+  (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster))
 
-(use-package lsp-ui
-  :ensure t
-  :defer t
-  :custom
-  (lsp-ui-doc-show-with-mouse nil))
-
-(use-package lsp-pyright
-  :ensure t
-  :defer t
-  :hook (python-ts-mode . (lambda ()
-                            (require 'lsp-pyright)
-                            (lsp-deferred)))
-  :custom (lsp-pyright-langserver-command "pyright"))
-
-(use-package flymake-ruff
-  :ensure t
-  :hook (python-ts-mode . flymake-ruff-load))
+(use-package pyvenv
+  :ensure t)
 
 (use-package go-mode
-  :ensure t
-  :defer t)
+  :ensure t)
 
 (use-package elisp-mode
   :ensure nil
@@ -469,3 +485,11 @@
    '((sequence "TODO(t)" "WAIT(w!)" "|" "CANCEL(c!)" "DONE(d!)")))
   :bind
   ("C-c a" . org-agenda))
+
+;; Bench
+;; Packages that are not being used at the moment (but who knows the future?)
+
+;; (use-package paren
+;;   :ensure nil
+;;   :hook
+;;   (after-init . show-paren-mode))
