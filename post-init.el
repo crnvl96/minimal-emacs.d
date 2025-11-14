@@ -35,6 +35,10 @@
   :ensure nil
   :config (setq package-install-upgrade-built-in t))
 
+(use-package simple
+  :ensure nil
+  :hook (after-init . visual-line-mode))
+
 (use-package compile
   :ensure nil
   :config (setq compile-command nil))
@@ -385,7 +389,6 @@
 
   :bind (("C-c f j" . consult-project-extra-find)))
 
-
 (use-package magit
   :ensure t)
 
@@ -438,12 +441,16 @@
   :config
   (setq eglot-server-programs
         '( (python-ts-mode . ("pyright-langserver" "--stdio"))
-           (go-ts-mode . ("gopls")))
+           (go-ts-mode . ("gopls"))))
 
-        eglot-workspace-configuration
-        '( :pyright (:disableOrganizeImports t)
-           :python.analysis (:autoSearchPaths t :useLibraryCodeForTypes t :diagnosticMode "openFilesOnly")
-           :gopls (:gofumpt t)))
+  (setq-default eglot-workspace-configuration
+                '( :pyright ( :disableOrganizeImports t)
+                   :python.analysis ( :autoSearchPaths t
+                                      :useLibraryCodeForTypes t
+                                      :diagnosticMode "openFilesOnly")
+                   :gopls ( :gofumpt t
+                            :staticcheck t
+                            :completeUnimported t)))
 
   (defun my/eglot-capf ()
     (setq-local completion-at-point-functions
