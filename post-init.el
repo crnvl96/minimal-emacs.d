@@ -349,43 +349,42 @@
   :config
   (setq consult-project-function #'consult-project-extra-project-fn)
 
-  ;; Define a function named 'consult-initial-narrow'.
-  ;; In Emacs Lisp (Elisp), 'defun' defines functions. It takes the name, args (none here), and body.
-  ;; This function auto-narrows Consult's project file finder based on the current buffer's mode.
-  (defun consult-initial-narrow ()
-    ;; 'when' executes its body if the condition is true (non-nil in Elisp).
-    ;; Here, it checks if we're in a minibuffer session by verifying 'minibuffer--original-buffer',
-    ;; which points to the buffer that triggered the minibuffer (e.g., when running a Consult command).
-    (when minibuffer--original-buffer
-      ;; 'when-let*' binds variables in sequence, proceeding only if each succeeds.
-      ;; It merges 'let*' (sequential binding) with 'when' (conditional execution).
-      ;; We bind 'original-mode' to the major mode of the buffer that invoked the minibuffer.
-      ;; Major modes in Emacs define editing behavior (e.g., 'python-mode' for Python files).
-      (when-let* ((original-mode (with-current-buffer minibuffer--original-buffer major-mode)))
-        ;; 'unless' runs its body if the condition is false (opposite of 'when').
-        ;; 'eq' checks if two symbols/objects are identical (fast equality for symbols).
-        ;; We skip narrowing if the original buffer is in 'fundamental-mode' (Emacs' basic mode).
-        ;; This inverts the original logic: narrow only when NOT in fundamental-mode.
-        (unless (eq original-mode 'fundamental-mode)
-          ;; Another 'when-let*': bind 'mode-config' to an alist (association list of key-value pairs).
-          ;; Alists use cons cells (dotted pairs). Here: ((command-symbol . narrowing-key))
-          ;; 'consult-project-extra-find' is a Consult command for finding files in the project.
-          ;; '?p' is the narrowing key that filters to project files in Consult's interface.
-          (when-let* ((mode-config '((consult-project-extra-find . ?p)))
-                      ;; 'alist-get' fetches the value for 'this-command' from the alist.
-                      ;; 'this-command' is Emacs' variable holding the currently running interactive command.
-                      (command-prefix (alist-get this-command mode-config)))
-            ;; 'setq-local' sets a buffer-local variable (affects only the current buffer).
-            ;; 'unread-command-events' is a queue of input events Emacs will process next.
-            ;; We simulate user input by adding the narrowing key ('?p') and a space to trigger it.
-            ;; This auto-applies the 'p' narrowing in the minibuffer for project file searches.
-            (setq-local unread-command-events (append unread-command-events (list command-prefix 32))))))))
+  ;; ;; Define a function named 'consult-initial-narrow'.
+  ;; ;; In Emacs Lisp (Elisp), 'defun' defines functions. It takes the name, args (none here), and body.
+  ;; ;; This function auto-narrows Consult's project file finder based on the current buffer's mode.
+  ;; (defun consult-initial-narrow ()
+  ;;   ;; 'when' executes its body if the condition is true (non-nil in Elisp).
+  ;;   ;; Here, it checks if we're in a minibuffer session by verifying 'minibuffer--original-buffer',
+  ;;   ;; which points to the buffer that triggered the minibuffer (e.g., when running a Consult command).
+  ;;   (when minibuffer--original-buffer
+  ;;     ;; 'when-let*' binds variables in sequence, proceeding only if each succeeds.
+  ;;     ;; It merges 'let*' (sequential binding) with 'when' (conditional execution).
+  ;;     ;; We bind 'original-mode' to the major mode of the buffer that invoked the minibuffer.
+  ;;     ;; Major modes in Emacs define editing behavior (e.g., 'python-mode' for Python files).
+  ;;     (when-let* ((original-mode (with-current-buffer minibuffer--original-buffer major-mode)))
+  ;;       ;; 'unless' runs its body if the condition is false (opposite of 'when').
+  ;;       ;; 'eq' checks if two symbols/objects are identical (fast equality for symbols).
+  ;;       ;; We skip narrowing if the original buffer is in 'fundamental-mode' (Emacs' basic mode).
+  ;;       ;; This inverts the original logic: narrow only when NOT in fundamental-mode.
+  ;;       (unless (eq original-mode 'fundamental-mode)
+  ;;         ;; Another 'when-let*': bind 'mode-config' to an alist (association list of key-value pairs).
+  ;;         ;; Alists use cons cells (dotted pairs). Here: ((command-symbol . narrowing-key))
+  ;;         ;; 'consult-project-extra-find' is a Consult command for finding files in the project.
+  ;;         ;; '?p' is the narrowing key that filters to project files in Consult's interface.
+  ;;         (when-let* ((mode-config '((consult-project-extra-find . ?p)))
+  ;;                     ;; 'alist-get' fetches the value for 'this-command' from the alist.
+  ;;                     ;; 'this-command' is Emacs' variable holding the currently running interactive command.
+  ;;                     (command-prefix (alist-get this-command mode-config)))
+  ;;           ;; 'setq-local' sets a buffer-local variable (affects only the current buffer).
+  ;;           ;; 'unread-command-events' is a queue of input events Emacs will process next.
+  ;;           ;; We simulate user input by adding the narrowing key ('?p') and a space to trigger it.
+  ;;           ;; This auto-applies the 'p' narrowing in the minibuffer for project file searches.
+  ;;           (setq-local unread-command-events (append unread-command-events (list command-prefix 32))))))))
 
-  (add-hook 'minibuffer-setup-hook #'consult-initial-narrow)
+  ;; (add-hook 'minibuffer-setup-hook #'consult-initial-narrow)
 
-  :bind
-  (("C-c p f" . consult-project-extra-find)
-   ("C-c p o" . consult-project-extra-find-other-window)))
+  :bind (("C-c f j" . consult-project-extra-find)))
+
 
 (use-package magit
   :ensure t)
