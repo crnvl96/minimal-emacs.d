@@ -7,7 +7,6 @@
   :ensure t
   :hook (after-init . spacious-padding-mode)
   :config
-
   (setq spacious-padding-widths
         '( :internal-border-width 15
            :header-line-width 4
@@ -16,15 +15,17 @@
            :right-divider-width 30
            :scroll-bar-width 8
            :fringe-width 8))
+  ;;  (setq spacious-padding-subtle-mode-line t)
 
-  (setq spacious-padding-subtle-mode-line t))
+  (setq spacious-padding-subtle-frame-lines
+        `( :mode-line-active 'default
+           :mode-line-inactive vertical-border)))
 
 (use-package ef-themes
   :ensure t
   :demand t
   :config
   (mapc #'disable-theme custom-enabled-themes)
-
   (load-theme 'ef-elea-light t))
 
 (use-package all-the-icons
@@ -32,7 +33,6 @@
 
 (use-package package
   :ensure nil
-
   :config (setq package-install-upgrade-built-in t))
 
 (use-package compile
@@ -185,12 +185,14 @@
   :bind (("C-=" . er/expand-region)))
 
 (use-package smartparens
+  :delight
   :ensure t
   :hook (prog-mode text-mode markdown-mode)
   :config (require 'smartparens-config))
 
 (use-package super-save
   :ensure t
+  :delight
   :hook (after-init . super-save-mode)
   :init (setq auto-save-default nil)
   :config (setq super-save-auto-save-when-idle t
