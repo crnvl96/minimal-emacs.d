@@ -35,9 +35,15 @@
   :ensure nil
   :config (setq package-install-upgrade-built-in t))
 
+(use-package ansi-color
+  :hook (compilation-filter . colorize-compilation-buffer)
+  :init
+  (defun colorize-compilation-buffer ()
+    (ansi-color-apply-on-region compilation-filter-start (point-max))))
+
 (use-package simple
   :ensure nil
-  :hook (after-init . visual-line-mode))
+  :hook (after-init . global-visual-line-mode))
 
 (use-package compile
   :ensure nil
@@ -131,45 +137,11 @@
             "C-c c" "Crux"
             "C-c f" "Find"))
 
-(use-package treesit
-  :ensure nil
-  :config (setq treesit-language-source-alist
-                ;; - Use `my/treesit-install-all-languages' to install all languages
-                ;; - Use `treesit-install-language-grammar' to install a specific language
-                '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-                  (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
-                  (go "https://github.com/tree-sitter/tree-sitter-go")
-                  (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
-                  (html "https://github.com/tree-sitter/tree-sitter-html")
-                  (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
-                  (jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc")
-                  (json "https://github.com/tree-sitter/tree-sitter-json")
-                  (markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown")
-                  (markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown")
-                  (mermaid "https://github.com/monaqa/tree-sitter-mermaid")
-                  (python "https://github.com/tree-sitter/tree-sitter-python")
-                  (rust "https://github.com/tree-sitter/tree-sitter-rust")
-                  (toml "https://github.com/ikatyang/tree-sitter-toml")
-                  (tsx "https://github.com/tree-sitter/tree-sitter-typescript")
-                  (typescript "https://github.com/tree-sitter/tree-sitter-typescript")
-                  (typst "https://github.com/uben0/tree-sitter-typst")
-                  (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
-
-  (defun my/treesit-install-all-languages ()
-    "Install all languages specified by `treesit-language-source-alist'."
-    (interactive)
-    (let ((languages (mapcar 'car treesit-language-source-alist)))
-      (dolist (lang languages)
-        (treesit-install-language-grammar lang)
-        (message "`%s' parser was installed." lang)
-        (sit-for 0.75))))
-
-  (add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.m?js\\'" . js-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode)))
+(use-package treesit-auto
+  :hook (after-init . global-treesit-auto-mode)
+  :config
+  (setq treesit-auto-install 'prompt)
+  (treesit-auto-add-to-auto-mode-alist 'all))
 
 (use-package ace-window
   :ensure t
@@ -221,6 +193,10 @@
   :ensure t
   :hook (after-init . undo-fu-session-global-mode)
   :commands (undo-fu-session-global-mode))
+
+(use-package mise
+  :ensure t
+  :hook (after-init . global-mise-mode))
 
 (use-package crux
   :demand t
@@ -349,46 +325,6 @@
          ("C-c f g" . consult-ripgrep)
          ("C-c f L" . consult-goto-line)))
 
-(use-package consult-project-extra
-  :config
-  (setq consult-project-function #'consult-project-extra-project-fn)
-
-  ;; ;; Define a function named 'consult-initial-narrow'.
-  ;; ;; In Emacs Lisp (Elisp), 'defun' defines functions. It takes the name, args (none here), and body.
-  ;; ;; This function auto-narrows Consult's project file finder based on the current buffer's mode.
-  ;; (defun consult-initial-narrow ()
-  ;;   ;; 'when' executes its body if the condition is true (non-nil in Elisp).
-  ;;   ;; Here, it checks if we're in a minibuffer session by verifying 'minibuffer--original-buffer',
-  ;;   ;; which points to the buffer that triggered the minibuffer (e.g., when running a Consult command).
-  ;;   (when minibuffer--original-buffer
-  ;;     ;; 'when-let*' binds variables in sequence, proceeding only if each succeeds.
-  ;;     ;; It merges 'let*' (sequential binding) with 'when' (conditional execution).
-  ;;     ;; We bind 'original-mode' to the major mode of the buffer that invoked the minibuffer.
-  ;;     ;; Major modes in Emacs define editing behavior (e.g., 'python-mode' for Python files).
-  ;;     (when-let* ((original-mode (with-current-buffer minibuffer--original-buffer major-mode)))
-  ;;       ;; 'unless' runs its body if the condition is false (opposite of 'when').
-  ;;       ;; 'eq' checks if two symbols/objects are identical (fast equality for symbols).
-  ;;       ;; We skip narrowing if the original buffer is in 'fundamental-mode' (Emacs' basic mode).
-  ;;       ;; This inverts the original logic: narrow only when NOT in fundamental-mode.
-  ;;       (unless (eq original-mode 'fundamental-mode)
-  ;;         ;; Another 'when-let*': bind 'mode-config' to an alist (association list of key-value pairs).
-  ;;         ;; Alists use cons cells (dotted pairs). Here: ((command-symbol . narrowing-key))
-  ;;         ;; 'consult-project-extra-find' is a Consult command for finding files in the project.
-  ;;         ;; '?p' is the narrowing key that filters to project files in Consult's interface.
-  ;;         (when-let* ((mode-config '((consult-project-extra-find . ?p)))
-  ;;                     ;; 'alist-get' fetches the value for 'this-command' from the alist.
-  ;;                     ;; 'this-command' is Emacs' variable holding the currently running interactive command.
-  ;;                     (command-prefix (alist-get this-command mode-config)))
-  ;;           ;; 'setq-local' sets a buffer-local variable (affects only the current buffer).
-  ;;           ;; 'unread-command-events' is a queue of input events Emacs will process next.
-  ;;           ;; We simulate user input by adding the narrowing key ('?p') and a space to trigger it.
-  ;;           ;; This auto-applies the 'p' narrowing in the minibuffer for project file searches.
-  ;;           (setq-local unread-command-events (append unread-command-events (list command-prefix 32))))))))
-
-  ;; (add-hook 'minibuffer-setup-hook #'consult-initial-narrow)
-
-  :bind (("C-c f j" . consult-project-extra-find)))
-
 (use-package magit
   :ensure t)
 
@@ -428,20 +364,23 @@
   :ensure t
   :delight
   :hook (prog-mode . apheleia-mode)
-  :config (setf (alist-get 'python-ts-mode apheleia-mode-alist)
-                '(ruff-isort ruff)
-                (alist-get 'go-ts-mode apheleia-mode-alist)
-                '(gofumpt)))
+  :config
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist) '(ruff-isort ruff))
+  (setf (alist-get 'go-ts-mode apheleia-mode-alist) '(gofumpt)))
 
 (use-package eglot
   :ensure nil
   :hook
   (python-ts-mode . eglot-ensure)
   (go-ts-mode . eglot-ensure)
+  (tsx-ts-mode . eglot-ensure)
+  (typescript-ts-mode . eglot-ensure)
   :config
   (setq eglot-server-programs
         '( (python-ts-mode . ("pyright-langserver" "--stdio"))
-           (go-ts-mode . ("gopls"))))
+           (go-ts-mode . ("gopls"))
+           (typescript-ts-mode . ("~/.local/share/mise/installs/node/24.11.0/bin/typescript-language-server" "--stdio"))
+           (tsx-ts-mode . ("~/.local/share/mise/installs/node/24.11.0/bin/typescript-language-server" "--stdio"))))
 
   (setq-default eglot-workspace-configuration
                 '( :pyright ( :disableOrganizeImports t)
