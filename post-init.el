@@ -133,7 +133,13 @@
   (set-face-attribute 'variable-pitch nil :height 200 :weight 'normal :family "Iosevka Aile")
   :bind (("M-n" . forward-paragraph)
          ("M-p" . backward-paragraph)
-         ("C-x ;" . comment-or-uncomment-region)))
+         ("C-x ;" . comment-or-uncomment-region)
+         ("\C-x2" (lambda ()
+                    (interactive)
+                    (split-window-vertically) (other-window 1)))
+         ("\C-x3" (lambda ()
+                    (interactive)
+                    (split-window-horizontally) (other-window 1)))))
 
 (use-package savehist
   :ensure nil
@@ -206,6 +212,7 @@
             "C-c f" "Find"))
 
 (use-package treesit-auto
+  :ensure t
   :hook (after-init . global-treesit-auto-mode)
   :config
   (setq treesit-auto-install 'prompt)
@@ -267,6 +274,7 @@
   :hook (after-init . global-mise-mode))
 
 (use-package crux
+  :ensure t
   :demand t
   :bind (([remap move-beginning-of-line] . crux-move-beginning-of-line)
          ([remap kill-whole-line] . crux-kill-whole-line)
@@ -322,7 +330,6 @@
                 (bound-and-true-p vertico--input))
       (setq-local corfu-auto nil)
       (corfu-mode 1)))
-
   (setq read-extended-command-predicate #'command-completion-default-include-p
         text-mode-ispell-word-completion nil
         tab-always-indent 'complete)
@@ -449,7 +456,6 @@
            (go-ts-mode . ("gopls"))
            (typescript-ts-mode . ("~/.local/share/mise/installs/node/24.11.0/bin/typescript-language-server" "--stdio"))
            (tsx-ts-mode . ("~/.local/share/mise/installs/node/24.11.0/bin/typescript-language-server" "--stdio"))))
-
   (setq-default eglot-workspace-configuration
                 '( :pyright ( :disableOrganizeImports t)
                    :python.analysis ( :autoSearchPaths t
@@ -458,12 +464,10 @@
                    :gopls ( :gofumpt t
                             :staticcheck t
                             :completeUnimported t)))
-
   (defun my/eglot-capf ()
     (setq-local completion-at-point-functions
                 (list (cape-capf-super
                        #'eglot-completion-at-point))))
-
   (add-hook 'eglot-managed-mode-hook #'my/eglot-capf)
   (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster))
 
