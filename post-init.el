@@ -15,11 +15,29 @@
            :right-divider-width 30
            :scroll-bar-width 8
            :fringe-width 8))
-  ;;  (setq spacious-padding-subtle-mode-line t)
-
   (setq spacious-padding-subtle-frame-lines
         `( :mode-line-active 'default
            :mode-line-inactive vertical-border)))
+
+(use-package modus-themes
+  :ensure t
+  :demand t
+  :init
+  (modus-themes-include-derivatives-mode 1)
+  :config
+  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)
+        modus-themes-to-rotate modus-themes-items
+        modus-themes-mixed-fonts t
+        modus-themes-variable-pitch-ui t
+        modus-themes-italic-constructs t
+        modus-themes-bold-constructs t
+        modus-themes-completions '((t . (bold)))
+        modus-themes-prompts '(bold)
+        modus-themes-headings
+        '((agenda-structure . (variable-pitch light 2.2))
+          (agenda-date . (variable-pitch regular 1.3))
+          (t . (regular 1.15))))
+  (setq modus-themes-common-palette-overrides nil))
 
 (use-package ef-themes
   :ensure t
@@ -28,8 +46,58 @@
   (mapc #'disable-theme custom-enabled-themes)
   (load-theme 'ef-elea-light t))
 
-(use-package all-the-icons
-  :if (display-graphic-p))
+(use-package nerd-icons
+  :ensure t)
+
+(use-package nerd-icons-completion
+  :ensure t
+  :after marginalia
+  :config
+  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+
+(use-package nerd-icons-corfu
+  :ensure t
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
+(use-package nerd-icons-dired
+  :ensure t
+  :hook
+  (dired-mode . nerd-icons-dired-mode))
+
+(use-package dired
+  :ensure nil
+  :commands (dired)
+  :hook
+  ((dired-mode . dired-hide-details-mode)
+   (dired-mode . hl-line-mode))
+  :config
+  (setq dired-recursive-copies 'always)
+  (setq dired-recursive-deletes 'always)
+  (setq delete-by-moving-to-trash t)
+  (setq dired-dwim-target t))
+
+(use-package dired-subtree
+  :ensure t
+  :after dired
+  :bind
+  ( :map dired-mode-map
+    ("<tab>" . dired-subtree-toggle)
+    ("TAB" . dired-subtree-toggle)
+    ("<backtab>" . dired-subtree-remove)
+    ("S-TAB" . dired-subtree-remove))
+  :config
+  (setq dired-subtree-use-backgrounds nil))
+
+(use-package trashed
+  :ensure t
+  :commands (trashed)
+  :config
+  (setq trashed-action-confirmer 'y-or-n-p)
+  (setq trashed-use-header-line t)
+  (setq trashed-sort-key '("Date deleted" . t))
+  (setq trashed-date-format "%Y-%m-%d %H:%M:%S"))
 
 (use-package package
   :ensure nil
@@ -61,8 +129,8 @@
   :ensure nil
   :config
   (setq completion-ignore-case t)
-  (set-face-attribute 'default nil :height 220 :weight 'normal :family "Iosevka")
-  (set-face-attribute 'variable-pitch nil :height 220 :weight 'normal :family "Iosevka Aile")
+  (set-face-attribute 'default nil :height 200 :weight 'normal :family "Iosevka")
+  (set-face-attribute 'variable-pitch nil :height 200 :weight 'normal :family "Iosevka Aile")
   :bind (("M-n" . forward-paragraph)
          ("M-p" . backward-paragraph)
          ("C-x ;" . comment-or-uncomment-region)))
