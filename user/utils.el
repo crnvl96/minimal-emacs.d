@@ -5,6 +5,38 @@
   :bind (([remap kill-ring-save] . easy-kill)
          ([remap mark-sexp] . easy-mark)))
 
+(use-package editorconfig
+  :ensure t
+  :hook (after-init . editorconfig-mode))
+
+(use-package wgrep
+  :ensure t)
+
+(use-package buffer-terminator
+  :ensure t
+  :delight
+  :hook (after-init . buffer-terminator-mode)
+  :config (setq buffer-terminator-verbose nil
+                buffer-terminator-inactivity-timeout (* 20 60)
+                buffer-terminator-interval (* 10 60)))
+
+(use-package helpful
+  :ensure t
+  :commands (helpful-callable
+             helpful-variable
+             helpful-key
+             helpful-command
+             helpful-at-point
+             helpful-function)
+  :config
+  (setq helpful-max-buffers 3)
+  :bind
+  ([remap describe-command] . helpful-command)
+  ([remap describe-function] . helpful-callable)
+  ([remap describe-key] . helpful-key)
+  ([remap describe-symbol] . helpful-symbol)
+  ([remap describe-variable] . helpful-variable))
+
 (use-package super-save
   :ensure t
   :delight
