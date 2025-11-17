@@ -19,8 +19,8 @@
   (setq eglot-server-programs
         '( (python-ts-mode . ("pyright-langserver" "--stdio"))
            (go-ts-mode . ("gopls"))
-           (typescript-ts-mode . ("~/.local/share/mise/installs/node/24.11.0/bin/typescript-language-server" "--stdio"))
-           (tsx-ts-mode . ("~/.local/share/mise/installs/node/24.11.0/bin/typescript-language-server" "--stdio"))))
+           (typescript-ts-mode . ("typescript-language-server" "--stdio"))
+           (tsx-ts-mode . ("typescript-language-server" "--stdio"))))
   (setq-default eglot-workspace-configuration
                 '( :pyright ( :disableOrganizeImports t)
                    :python.analysis ( :autoSearchPaths t

@@ -26,6 +26,7 @@
   :hook
   (after-init . global-corfu-mode)
   (after-init . corfu-history-mode)
+  (after-init . corfu-popupinfo-mode)
   (minibuffer-setup . my/corfu-enable-always-in-minibuffer)
   :init
   (defun my/corfu-enable-always-in-minibuffer ()
@@ -42,7 +43,10 @@
   :bind (:map corfu-map
               ("C-e" . corfu-quit)
               ("C-i" . corfu-complete)
-              ("M-n" . corfu-info-documentation)
+              ("M-n" . corfu-popupinfo-documentation)
+              ("C-s" . corfu-popupinfo-documentation)
+              ("C-h" . corfu-popupinfo-toggle)
+              ("C-k" . corfu-info-location)
               ("M-p" . corfu-info-location)
               ("C-y" . corfu-insert)))
 
