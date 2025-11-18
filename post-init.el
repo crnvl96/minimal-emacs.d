@@ -1,6 +1,7 @@
 ;;; post-init.el -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;;; Core features
+
 (use-package delight
   :ensure t)
 
@@ -17,9 +18,7 @@
                       (interactive)
                       (split-window-vertically) (other-window 1)))
          ("C-x 3" . (lambda ()
-                      (interactive) (split-window-horizontally) (other-window 1)))
-         ("C-v" . view-scroll-half-page-forward)
-         ("M-v" . view-scroll-half-page-backward)))
+                      (interactive) (split-window-horizontally) (other-window 1)))))
 
 (use-package ansi-color
   :ensure nil
@@ -104,9 +103,7 @@
   :config (setq save-place-limit 150))
 
 (use-package flymake
-  :ensure nil
-  :bind (("C-}" . flymake-goto-next-error)
-         ("C-{" . flymake-goto-prev-error)))
+  :ensure nil)
 
 ;;; UI elements
 
@@ -148,7 +145,7 @@
   :demand t)
 
 (mapc #'disable-theme custom-enabled-themes)
-(load-theme 'ef-elea-light t)
+(load-theme 'ef-maris-dark t)
 
 ;;; Icons
 
@@ -221,6 +218,16 @@
   :ensure t
   :hook (after-init . global-treesit-auto-mode)
   :config
+  (setq my-json-tsauto-config
+        (make-treesit-auto-recipe
+         :lang 'json
+         :ts-mode 'json-ts-mode
+         :remap '(json-mode)
+         :url "https://github.com/tree-sitter/tree-sitter-json"
+         :revision "master"
+         :source-dir "src"
+         :ext "\\.json\\'"))
+  (add-to-list 'treesit-auto-recipe-list my-json-tsauto-config)
   (setq treesit-auto-install 'prompt)
   (treesit-auto-add-to-auto-mode-alist 'all))
 
@@ -247,7 +254,8 @@
 ;;; Utilities
 
 (use-package nov
-  :ensure t)
+  :ensure t
+  :mode (("\\.epub\\'" . nov-mode)))
 
 (use-package easy-kill
   :ensure t
@@ -257,10 +265,6 @@
 (use-package editorconfig
   :ensure t
   :hook (after-init . editorconfig-mode))
-
-(use-package centered-cursor-mode
-  :ensure t
-  :hook (after-init . global-centered-cursor-mode))
 
 (use-package exec-path-from-shell
   :ensure t
@@ -508,6 +512,10 @@
 
 (use-package pyvenv
   :ensure t)
+
+(use-package json-mode
+  :ensure t
+  :mode (("\\.json\\'" . json-mode)))
 
 (use-package go-mode
   :ensure t)
