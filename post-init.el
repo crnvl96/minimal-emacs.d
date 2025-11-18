@@ -246,6 +246,9 @@
 
 ;;; Utilities
 
+(use-package nov
+  :ensure t)
+
 (use-package easy-kill
   :ensure t
   :bind (([remap kill-ring-save] . easy-kill)
