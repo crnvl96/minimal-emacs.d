@@ -335,7 +335,10 @@
 
 (use-package mise
   :ensure t
-  :hook (after-init . global-mise-mode))
+  :hook (after-init . global-mise-mode)
+  :init
+  (assoc-delete-all "%k SPC" devil-special-keys)
+  :bind(("C-," . global-devil-mode)))
 
 (use-package crux
   :ensure t
