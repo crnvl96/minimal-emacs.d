@@ -222,7 +222,7 @@
         (make-treesit-auto-recipe
          :lang 'json
          :ts-mode 'json-ts-mode
-         :remap '(json-mode)x
+         :remap '(json-mode)
          :url "https://github.com/tree-sitter/tree-sitter-json"
          :revision "master"
          :source-dir "src"
@@ -235,10 +235,7 @@
 
 (use-package devil
   :ensure t
-  :hook (after-init . global-devil-mode)
-  :config
-  (global-set-key (kbd "C-,") 'global-devil-mode)
-  (assoc-delete-all "%k SPC" devil-special-keys))
+  :hook (after-init . global-devil-mode))
 
 (use-package ace-window
   :ensure t
