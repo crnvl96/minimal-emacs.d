@@ -235,7 +235,10 @@
 
 (use-package devil
   :ensure t
-  :hook (after-init . global-devil-mode))
+  :hook (after-init . global-devil-mode)
+  :config
+  (assoc-delete-all "%k SPC" devil-special-keys)
+  :bind(("C-," . global-devil-mode)))
 
 (use-package ace-window
   :ensure t
@@ -335,10 +338,7 @@
 
 (use-package mise
   :ensure t
-  :hook (after-init . global-mise-mode)
-  :init
-  (assoc-delete-all "%k SPC" devil-special-keys)
-  :bind(("C-," . global-devil-mode)))
+  :hook (after-init . global-mise-mode))
 
 (use-package crux
   :ensure t
