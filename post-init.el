@@ -9,8 +9,8 @@
   :ensure nil
   :config
   (setq completion-ignore-case t)
-  (set-face-attribute 'default nil :height 140 :weight 'normal :family "Iosevka")
-  (set-face-attribute 'variable-pitch nil :height 140 :weight 'normal :family "Iosevka Aile")
+  (set-face-attribute 'default nil :height 180 :weight 'normal :family "Iosevka")
+  (set-face-attribute 'variable-pitch nil :height 180 :weight 'normal :family "Iosevka Aile")
   :bind (("M-n" . forward-paragraph)
          ("M-p" . backward-paragraph)
          ("C-x ;" . comment-or-uncomment-region)
@@ -222,7 +222,7 @@
         (make-treesit-auto-recipe
          :lang 'json
          :ts-mode 'json-ts-mode
-         :remap '(json-mode)
+         :remap '(json-mode)x
          :url "https://github.com/tree-sitter/tree-sitter-json"
          :revision "master"
          :source-dir "src"
@@ -232,6 +232,13 @@
   (treesit-auto-add-to-auto-mode-alist 'all))
 
 ;;; Code
+
+(use-package devil
+  :ensure t
+  :hook (after-init . global-devil-mode)
+  :config
+  (global-set-key (kbd "C-,") 'global-devil-mode)
+  (assoc-delete-all "%k SPC" devil-special-keys))
 
 (use-package ace-window
   :ensure t
