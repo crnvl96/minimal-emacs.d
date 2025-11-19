@@ -9,8 +9,8 @@
   :ensure nil
   :config
   (setq completion-ignore-case t)
-  (set-face-attribute 'default nil :height 200 :weight 'normal :family "Iosevka")
-  (set-face-attribute 'variable-pitch nil :height 200 :weight 'normal :family "Iosevka Aile")
+  (set-face-attribute 'default nil :height 140 :weight 'normal :family "Iosevka")
+  (set-face-attribute 'variable-pitch nil :height 140 :weight 'normal :family "Iosevka Aile")
   :bind (("M-n" . forward-paragraph)
          ("M-p" . backward-paragraph)
          ("C-x ;" . comment-or-uncomment-region)
@@ -408,6 +408,15 @@
               ("C-k" . corfu-info-location)
               ("M-p" . corfu-info-location)
               ("C-y" . corfu-insert)))
+
+(use-package corfu-terminal
+  :ensure t
+  :vc ( :url "https://codeberg.org/akib/emacs-corfu-terminal.git"
+        :rev
+        :newest)
+  :init
+  (unless (display-graphic-p)
+    (corfu-terminal-mode +1)))
 
 (use-package cape
   :ensure t
