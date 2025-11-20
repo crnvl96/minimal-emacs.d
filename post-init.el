@@ -380,7 +380,7 @@
         tab-always-indent 'complete)
   :config
   (setq corfu-cycle t)
-  (setq corfu-auto t)
+  ;; (setq corfu-auto t)
   (setq corfu-preselect 'directory)
   (keymap-set corfu-map "RET" `( menu-item "" nil :filter
                                  ,(lambda (&optional _)
