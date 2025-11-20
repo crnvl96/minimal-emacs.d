@@ -5,42 +5,6 @@
 (require 'rc-delight)
 (require 'rc-builtin)
 
-(use-package package
-  :ensure nil
-  :config (setq package-install-upgrade-built-in t))
-
-(use-package compile
-  :ensure nil
-  :config (setq compile-command nil))
-
-(use-package pixel-scroll
-  :ensure nil
-  :config
-  (unless (and (eq window-system 'mac)
-               (bound-and-true-p mac-carbon-version-string))
-    (setq pixel-scroll-precision-use-momentum nil)
-    (pixel-scroll-precision-mode 1)))
-
-(use-package savehist
-  :ensure nil
-  :hook (after-init . savehist-mode))
-
-(use-package display-line-numbers
-  :ensure nil
-  :hook (after-init . global-display-line-numbers-mode))
-
-(use-package time
-  :ensure nil
-  :hook (after-init . display-time-mode))
-
-(use-package hl-line
-  :ensure nil
-  :hook (after-init . global-hl-line-mode))
-
-(use-package delsel
-  :ensure nil
-  :hook (after-init . delete-selection-mode))
-
 (use-package winner
   :ensure nil
   :hook (after-init . winner-mode))
@@ -380,7 +344,6 @@
         tab-always-indent 'complete)
   :config
   (setq corfu-cycle t)
-  ;; (setq corfu-auto t)
   (setq corfu-preselect 'directory)
   (keymap-set corfu-map "RET" `( menu-item "" nil :filter
                                  ,(lambda (&optional _)
