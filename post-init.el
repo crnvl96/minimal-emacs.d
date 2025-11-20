@@ -1,38 +1,13 @@
 ;;; post-init.el -*- no-byte-compile: t; lexical-binding: t; -*-
 
-;;; Core features
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/rc/"))
 
-(use-package delight
-  :ensure t)
-
-(use-package emacs
-  :ensure nil
-  :config
-  (setq completion-ignore-case t)
-  (set-face-attribute 'default nil :height 180 :weight 'normal :family "Iosevka")
-  (set-face-attribute 'variable-pitch nil :height 180 :weight 'normal :family "Iosevka Aile")
-  :bind (("M-n" . forward-paragraph)
-         ("M-p" . backward-paragraph)
-         ("C-x ;" . comment-or-uncomment-region)
-         ("C-x 2" . (lambda ()
-                      (interactive)
-                      (split-window-vertically) (other-window 1)))
-         ("C-x 3" . (lambda ()
-                      (interactive) (split-window-horizontally) (other-window 1)))))
-
-(use-package ansi-color
-  :ensure nil
-  :hook (compilation-filter . colorize-compilation-buffer)
-  :init (defun colorize-compilation-buffer ()
-          (ansi-color-apply-on-region compilation-filter-start (point-max))))
+(require 'rc-delight)
+(require 'rc-builtin)
 
 (use-package package
   :ensure nil
   :config (setq package-install-upgrade-built-in t))
-
-(use-package simple
-  :ensure nil
-  :hook (after-init . global-visual-line-mode))
 
 (use-package compile
   :ensure nil
@@ -345,7 +320,7 @@
   :demand t
   :bind (([remap move-beginning-of-line] . crux-move-beginning-of-line)
          ([remap kill-whole-line] . crux-kill-whole-line)
-         ([remap keyboard-quit] . crux-keyboard-quit-dwin)
+         ([remap keyboard-quit]  . crux-keyboard-quit-dwin)
          ([remap upcase-region] . crux-upcase-region)
          ([remap downcase-region] . crux-downcase-region)
          ("C-S-j" . crux-top-join-line)
@@ -406,15 +381,10 @@
   :config
   (setq corfu-cycle t)
   (setq corfu-auto t)
-  :bind (:map corfu-map
-              ("C-e" . corfu-quit)
-              ("C-i" . corfu-complete)
-              ("M-n" . corfu-popupinfo-documentation)
-              ("C-s" . corfu-popupinfo-documentation)
-              ("C-h" . corfu-popupinfo-toggle)
-              ("C-k" . corfu-info-location)
-              ("M-p" . corfu-info-location)
-              ("C-y" . corfu-insert)))
+  (setq corfu-preselect 'directory)
+  (keymap-set corfu-map "RET" `( menu-item "" nil :filter
+                                 ,(lambda (&optional _)
+                                    (and (derived-mode-p 'eshell-mode 'comint-mode))))))
 
 (use-package corfu-terminal
   :ensure t
