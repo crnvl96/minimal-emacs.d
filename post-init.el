@@ -5,14 +5,6 @@
 (require 'rc-delight)
 (require 'rc-builtin)
 
-(use-package winner
-  :ensure nil
-  :hook (after-init . winner-mode))
-
-(use-package eldoc
-  :ensure nil
-  :delight)
-
 (use-package autorevert
   :ensure nil
   :hook (after-init . global-auto-revert-mode)
@@ -177,7 +169,15 @@
   :hook (after-init . global-devil-mode)
   :config
   (assoc-delete-all "%k SPC" devil-special-keys)
-  :bind(("C-," . global-devil-mode)))
+  (define-key devil-mode-map (kbd ".") #'devil)
+  (add-to-list 'devil-special-keys `(". ." . ,(devil-key-executor ".")))
+  ;; (setq devil-all-keys-repeatable t)
+  (setq devil-translations '((", z" . "C-")
+			                 (". z" . "M-")
+			                 (", ," . ",")
+			                 (". ." . ".")
+			                 ("," . "C-")
+			                 ("." . "M-"))))
 
 (use-package ace-window
   :ensure t
