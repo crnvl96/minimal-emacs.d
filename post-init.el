@@ -25,3 +25,10 @@
 (require 'rc-markdown)
 (require 'rc-typst)
 (require 'rc-org)
+
+(use-package devil
+  :ensure t
+  :hook (after-init . global-devil-mode)
+  :config
+  (assoc-delete-all "%k SPC" devil-special-keys)
+  (devil-set-key (kbd "j")))

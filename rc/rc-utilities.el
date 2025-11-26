@@ -9,7 +9,7 @@
   :config
   (setq avy-keys (number-sequence ?a ?y))
   :bind (("M-i" . avy-goto-char-2)
-         ("M-e" . avy-goto-word-0)))
+         ("C-d" . avy-goto-word-0)))
 
 (use-package expand-region
   :ensure t
