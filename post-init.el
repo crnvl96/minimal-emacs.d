@@ -8,72 +8,12 @@
 (require 'rc-themes)
 (require 'rc-icons)
 (require 'rc-dired)
-
-(use-package which-key
-  :ensure nil
-  :delight
-  :hook (after-init . which-key-mode)
-  :config (which-key-add-key-based-replacements
-            "C-x p" "Project"
-            "C-c c" "Crux"
-            "C-c f" "Find"))
-
-(use-package treesit-auto
-  :ensure t
-  :hook (after-init . global-treesit-auto-mode)
-  :config
-  (setq my-json-tsauto-config
-        (make-treesit-auto-recipe
-         :lang 'json
-         :ts-mode 'json-ts-mode
-         :remap '(json-mode)
-         :url "https://github.com/tree-sitter/tree-sitter-json"
-         :revision "master"
-         :source-dir "src"
-         :ext "\\.json\\'"))
-  (add-to-list 'treesit-auto-recipe-list my-json-tsauto-config)
-  (setq treesit-auto-install 'prompt)
-  (treesit-auto-add-to-auto-mode-alist 'all))
-
-(use-package ace-window
-  :ensure t
-  :bind ("M-o" . ace-window))
-
-(use-package avy
-  :ensure t
-  :bind ("M-i" . avy-goto-char-2))
-
-(use-package expand-region
-  :ensure t
-  :bind (("C-=" . er/expand-region)))
-
-(use-package smartparens
-  :delight
-  :ensure t
-  :hook (prog-mode text-mode markdown-mode)
-  :config (require 'smartparens-config))
-
-;;; Utilities
+(require 'rc-treesit)
+(require 'rc-utilities)
 
 (use-package nov
   :ensure t
   :mode (("\\.epub\\'" . nov-mode)))
-
-(use-package easy-kill
-  :ensure t
-  :bind (([remap kill-ring-save] . easy-kill)
-         ([remap mark-sexp] . easy-mark)))
-
-(use-package editorconfig
-  :ensure t
-  :hook (after-init . editorconfig-mode))
-
-(use-package exec-path-from-shell
-  :ensure t
-  :demand t
-  :config
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize)))
 
 (use-package wgrep
   :ensure t)

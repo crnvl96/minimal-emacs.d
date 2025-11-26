@@ -26,9 +26,15 @@
 (global-set-key (kbd "C-x 2") (lambda () (interactive) (split-window-vertically) (other-window 1)))
 (global-set-key (kbd "C-x 3") (lambda () (interactive) (split-window-horizontally) (other-window 1)))
 
+(which-key-add-key-based-replacements
+  "C-x p" "Project"
+  "C-c c" "Crux"
+  "C-c f" "Find")
+
 (add-hook 'compilation-filter-hook (lambda () (ansi-color-apply-on-region compilation-filter-start (point-max))))
 (add-hook 'kill-emacs-hook #'recentf-cleanup -90)
 (add-hook 'after-init-hook #'global-visual-line-mode)
+(add-hook 'after-init-hook #'which-key-mode)
 (add-hook 'after-init-hook #'save-place-mode)
 (add-hook 'after-init-hook #'savehist-mode)
 (add-hook 'after-init-hook #'global-display-line-numbers-mode)
