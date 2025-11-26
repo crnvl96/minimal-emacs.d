@@ -5,29 +5,6 @@
 (require 'rc-delight)
 (require 'rc-builtin)
 
-(use-package autorevert
-  :ensure nil
-  :hook (after-init . global-auto-revert-mode)
-  :config (setq auto-revert-interval 3
-                auto-revert-remote-files nil
-                auto-revert-use-notify t
-                auto-revert-avoid-polling nil
-                auto-revert-verbose t))
-
-(use-package recentf
-  :ensure nil
-  :hook (after-init . recentf-mode)
-  :config (add-hook 'kill-emacs-hook #'recentf-cleanup -90))
-
-(use-package whitespace
-  :ensure nil
-  :delight
-  (whitespace-mode)
-  (global-whitespace-mode)
-  :hook (after-init . global-whitespace-mode)
-  :config (setq whitespace-style '(face trailing empty)
-                whitespace-highlight-on-current-line t))
-
 (use-package saveplace
   :ensure nil
   :hook (after-init . save-place-mode)
