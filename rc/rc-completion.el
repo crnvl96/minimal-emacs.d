@@ -40,7 +40,7 @@
         tab-always-indent 'complete)
   :config
   (setq corfu-cycle t)
-  (setq corfu-preselect 'directory)
+  (setq corfu-preselect 'prompt)
   (keymap-set corfu-map "RET" `( menu-item "" nil :filter
                                  ,(lambda (&optional _)
                                     (and (derived-mode-p 'eshell-mode 'comint-mode)))))
