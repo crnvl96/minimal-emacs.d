@@ -13,6 +13,7 @@
 (setq auto-revert-verbose t)
 (setq whitespace-style '(face trailing empty))
 (setq whitespace-highlight-on-current-line t)
+(setq save-place-limit 150)
 
 (set-face-attribute 'default nil :height 180 :weight 'normal :family "Iosevka")
 (set-face-attribute 'variable-pitch nil :height 180 :weight 'normal :family "Iosevka Aile")
@@ -25,6 +26,7 @@
 (add-hook 'compilation-filter-hook (lambda () (ansi-color-apply-on-region compilation-filter-start (point-max))))
 (add-hook 'kill-emacs-hook #'recentf-cleanup -90)
 (add-hook 'after-init-hook #'global-visual-line-mode)
+(add-hook 'after-init-hook #'save-place-mode)
 (add-hook 'after-init-hook #'savehist-mode)
 (add-hook 'after-init-hook #'global-display-line-numbers-mode)
 (add-hook 'after-init-hook #'display-time-mode)

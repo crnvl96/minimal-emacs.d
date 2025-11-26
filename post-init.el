@@ -5,16 +5,6 @@
 (require 'rc-delight)
 (require 'rc-builtin)
 
-(use-package saveplace
-  :ensure nil
-  :hook (after-init . save-place-mode)
-  :config (setq save-place-limit 150))
-
-(use-package flymake
-  :ensure nil)
-
-;;; UI elements
-
 (use-package spacious-padding
   :ensure t
   :hook (after-init . spacious-padding-mode)
