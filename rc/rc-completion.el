@@ -43,7 +43,12 @@
   (setq corfu-preselect 'directory)
   (keymap-set corfu-map "RET" `( menu-item "" nil :filter
                                  ,(lambda (&optional _)
-                                    (and (derived-mode-p 'eshell-mode 'comint-mode))))))
+                                    (and (derived-mode-p 'eshell-mode 'comint-mode)))))
+  :bind ( :map corfu-map
+          ("TAB" . corfu-next)
+          ([tab] . corfu-next)
+          ("S-TAB" . corfu-previous)
+          ([backtab] . corfu-previous)))
 
 (use-package cape
   :ensure t

@@ -14,6 +14,7 @@
 (require 'rc-nov)
 (require 'rc-completion)
 (require 'rc-consult)
+(require 'rc-rg)
 (require 'rc-magit)
 (require 'rc-apheleia)
 (require 'rc-eglot)
