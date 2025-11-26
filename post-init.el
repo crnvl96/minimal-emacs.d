@@ -6,62 +6,8 @@
 (require 'rc-builtin)
 (require 'rc-spacious-padding)
 (require 'rc-themes)
-
-;;; Icons
-
-(use-package nerd-icons
-  :ensure t)
-
-(use-package nerd-icons-completion
-  :ensure t
-  :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
-
-(use-package nerd-icons-corfu
-  :ensure t
-  :after corfu
-  :config
-  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
-
-(use-package nerd-icons-dired
-  :ensure t
-  :hook (dired-mode . nerd-icons-dired-mode))
-
-;;; Dired
-
-(use-package dired
-  :ensure nil
-  :commands (dired)
-  :hook
-  ((dired-mode . dired-hide-details-mode)
-   (dired-mode . hl-line-mode))
-  :config
-  (setq dired-recursive-copies 'always)
-  (setq dired-recursive-deletes 'always)
-  (setq delete-by-moving-to-trash t)
-  (setq dired-dwim-target t))
-
-(use-package dired-subtree
-  :ensure t
-  :after dired
-  :bind
-  ( :map dired-mode-map
-    ("<tab>" . dired-subtree-toggle)
-    ("TAB" . dired-subtree-toggle)
-    ("<backtab>" . dired-subtree-remove)
-    ("S-TAB" . dired-subtree-remove))
-  :config
-  (setq dired-subtree-use-backgrounds nil))
-
-(use-package trashed
-  :ensure t
-  :commands (trashed)
-  :config
-  (setq trashed-action-confirmer 'y-or-n-p)
-  (setq trashed-use-header-line t)
-  (setq trashed-sort-key '("Date deleted" . t))
-  (setq trashed-date-format "%Y-%m-%d %H:%M:%S"))
-
-;;; Which Key
+(require 'rc-icons)
+(require 'rc-dired)
 
 (use-package which-key
   :ensure nil
@@ -71,8 +17,6 @@
             "C-x p" "Project"
             "C-c c" "Crux"
             "C-c f" "Find"))
-
-;;; Treesit
 
 (use-package treesit-auto
   :ensure t
@@ -90,23 +34,6 @@
   (add-to-list 'treesit-auto-recipe-list my-json-tsauto-config)
   (setq treesit-auto-install 'prompt)
   (treesit-auto-add-to-auto-mode-alist 'all))
-
-;;; Code
-
-(use-package devil
-  :ensure t
-  :hook (after-init . global-devil-mode)
-  :config
-  (assoc-delete-all "%k SPC" devil-special-keys)
-  (define-key devil-mode-map (kbd ".") #'devil)
-  (add-to-list 'devil-special-keys `(". ." . ,(devil-key-executor ".")))
-  ;; (setq devil-all-keys-repeatable t)
-  (setq devil-translations '((", z" . "C-")
-			                 (". z" . "M-")
-			                 (", ," . ",")
-			                 (". ." . ".")
-			                 ("," . "C-")
-			                 ("." . "M-"))))
 
 (use-package ace-window
   :ensure t
@@ -437,10 +364,3 @@
                 org-todo-keywords '((sequence "TODO(t)" "WAIT(w!)" "|" "CANCEL(c!)" "DONE(d!)")))
   :bind
   ("C-c a" . org-agenda))
-
-;;; Bench
-
-;; (use-package paren
-;;   :ensure nil
-;;   :hook
-;;   (after-init . show-paren-mode))
