@@ -3,11 +3,6 @@
 (setq completion-ignore-case t)
 (setq package-install-upgrade-built-in t)
 (setq compile-command nil)
-(setq auto-revert-interval 3)
-(setq auto-revert-remote-files nil)
-(setq auto-revert-use-notify t)
-(setq auto-revert-avoid-polling nil)
-(setq auto-revert-verbose t)
 (setq whitespace-style '(face trailing empty))
 (setq whitespace-highlight-on-current-line t)
 (setq save-place-limit 150)
@@ -20,8 +15,6 @@
   (setq pixel-scroll-precision-use-momentum nil)
   (pixel-scroll-precision-mode 1))
 
-(global-set-key (kbd "M-n") 'forward-paragraph)
-(global-set-key (kbd "M-p") 'backward-paragraph)
 (global-set-key (kbd "C-x ;") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-x 2") (lambda () (interactive) (split-window-vertically) (other-window 1)))
 (global-set-key (kbd "C-x 3") (lambda () (interactive) (split-window-horizontally) (other-window 1)))
@@ -32,7 +25,6 @@
   "C-c f" "Find")
 
 (add-hook 'compilation-filter-hook (lambda () (ansi-color-apply-on-region compilation-filter-start (point-max))))
-(add-hook 'kill-emacs-hook #'recentf-cleanup -90)
 (add-hook 'after-init-hook #'global-visual-line-mode)
 (add-hook 'after-init-hook #'which-key-mode)
 (add-hook 'after-init-hook #'save-place-mode)

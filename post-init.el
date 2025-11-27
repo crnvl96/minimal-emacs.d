@@ -4,12 +4,12 @@
 
 (require 'rc-delight)
 (require 'rc-builtin)
-(require 'rc-spacious-padding)
+;; (require 'rc-spacious-padding)
 (require 'rc-themes)
-(require 'rc-icons)
+;; (require 'rc-icons)
 (require 'rc-dired)
-(require 'rc-treesit)
-(require 'rc-utilities)
+;; (require 'rc-treesit)
+(require 'rc-utilities) ;; OK - finished trimming
 (require 'rc-crux)
 (require 'rc-nov)
 (require 'rc-completion)
