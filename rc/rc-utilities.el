@@ -1,9 +1,5 @@
 ;;; -*- lexical-binding: t; -*-
 
-(use-package ace-window
-  :ensure t
-  :bind ("M-o" . ace-window))
-
 (use-package avy
   :ensure t
   :config

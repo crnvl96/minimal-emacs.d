@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t; -*-
 
+(setq completion-ignore-case t)
+
 (use-package marginalia
   :ensure t
   :hook (after-init . marginalia-mode))
