@@ -1,17 +1,5 @@
 ;;; -*- lexical-binding: t; -*-
 
-(use-package expand-region
-  :ensure t
-  :bind (("C-=" . er/expand-region)))
-
-(use-package editorconfig
-  :ensure t
-  :hook (after-init . editorconfig-mode))
-
-(use-package mise
-  :ensure t
-  :hook (after-init . global-mise-mode))
-
 (use-package exec-path-from-shell
   :ensure t
   :demand t
