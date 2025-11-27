@@ -8,8 +8,8 @@
 (require 'rc-themes)
 ;; (require 'rc-icons)
 (require 'rc-dired)
-;; (require 'rc-treesit)
-(require 'rc-utilities) ;; OK - finished trimming
+(require 'rc-treesit)
+(require 'rc-utilities) ;; OK
 (require 'rc-crux)
 (require 'rc-nov)
 (require 'rc-completion)

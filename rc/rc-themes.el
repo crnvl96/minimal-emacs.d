@@ -17,11 +17,11 @@
                                         (agenda-date . (variable-pitch regular 1.3))
                                         (t . (regular 1.15)))))
 
-(use-package ef-themes
-  :ensure t
-  :demand t)
+;; (use-package ef-themes
+;;   :ensure t
+;;   :demand t)
 
 (mapc #'disable-theme custom-enabled-themes)
-(load-theme 'ef-maris-dark t)
+(load-theme 'modus-vivendi t)
 
 (provide 'rc-themes)

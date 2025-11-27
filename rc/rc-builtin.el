@@ -5,10 +5,11 @@
 (setq compile-command nil)
 (setq whitespace-style '(face trailing empty))
 (setq whitespace-highlight-on-current-line t)
+(setq auto-revert-interval 2)
 (setq save-place-limit 150)
 
-(set-face-attribute 'default nil :height 180 :weight 'normal :family "Iosevka")
-(set-face-attribute 'variable-pitch nil :height 180 :weight 'normal :family "Iosevka Aile")
+(set-face-attribute 'default nil :height 140 :weight 'normal :family "Iosevka")
+(set-face-attribute 'variable-pitch nil :height 140 :weight 'normal :family "Iosevka Aile")
 
 (unless (and (eq window-system 'mac)
              (bound-and-true-p mac-carbon-version-string))
