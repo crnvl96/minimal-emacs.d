@@ -1,19 +1,19 @@
 ;;; -*- lexical-binding: t; -*-
 
-;; (use-package ace-window
-;;   :ensure t
-;;   :bind ("M-o" . ace-window))
+(use-package ace-window
+  :ensure t
+  :bind ("M-o" . ace-window))
 
-;; (use-package avy
-;;   :ensure t
-;;   :config
-;;   (setq avy-keys (number-sequence ?a ?y))
-;;   :bind (("M-i" . avy-goto-char-2)
-;;          ("C-d" . avy-goto-word-0)))
+(use-package avy
+  :ensure t
+  :config
+  (setq avy-keys (number-sequence ?a ?y))
+  :bind (("M-i" . avy-goto-char-2)
+         ("C-d" . avy-goto-word-0)))
 
-;; (use-package expand-region
-;;   :ensure t
-;;   :bind (("C-=" . er/expand-region)))
+(use-package expand-region
+  :ensure t
+  :bind (("C-=" . er/expand-region)))
 
 (use-package editorconfig
   :ensure t
@@ -30,24 +30,24 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
-;; (use-package buffer-terminator
-;;   :ensure t
-;;   :delight
-;;   :hook (after-init . buffer-terminator-mode)
-;;   :config (setq buffer-terminator-verbose nil
-;;                 buffer-terminator-inactivity-timeout (* 20 60)
-;;                 buffer-terminator-interval (* 20 60)))
+(use-package buffer-terminator
+  :ensure t
+  :delight
+  :hook (after-init . buffer-terminator-mode)
+  :config (setq buffer-terminator-verbose nil
+                buffer-terminator-inactivity-timeout (* 20 60)
+                buffer-terminator-interval (* 20 60)))
 
-;; (use-package super-save
-;;   :ensure t
-;;   :delight
-;;   :hook (after-init . super-save-mode)
-;;   :init (setq auto-save-default nil)
-;;   :config (setq super-save-auto-save-when-idle t
-;;                 super-save-delete-trailing-whitespace t
-;;                 super-save-all-buffers t)
-;;   (add-to-list 'super-save-triggers 'ace-window)
-;;   (add-to-list 'super-save-hook-triggers 'find-file-hook))
+(use-package super-save
+  :ensure t
+  :delight
+  :hook (after-init . super-save-mode)
+  :init (setq auto-save-default nil)
+  :config (setq super-save-auto-save-when-idle t
+                super-save-delete-trailing-whitespace t
+                super-save-all-buffers t)
+  (add-to-list 'super-save-triggers 'ace-window)
+  (add-to-list 'super-save-hook-triggers 'find-file-hook))
 
 (use-package undo-fu
   :demand t

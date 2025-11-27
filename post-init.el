@@ -26,21 +26,21 @@
 (require 'rc-typst)
 (require 'rc-org)
 
-;; (use-package devil
-;;   :ensure t
-;;   :vc (:url "https://github.com/fbrosda/devil"
-;;             :branch "dev"
-;;             :rev :newest)
-;;   :hook (after-init . global-devil-mode)
-;;   :bind
-;;     ([remap describe-key] . devil-describe-key)
-;;   :config
-;;   (assoc-delete-all "%k SPC" devil-special-keys)
-;;   (devil-set-key (kbd "j"))
-;;   (setq devil-exit-key ".")
-;;   (setq devil-all-keys-repeatable t)
-;;   (setq devil-highlight-repeatable t)
-;;   (setq devil-repeatable-keys '( ("%k p" "%k n" "%k b" "%k f" "%k a" "%k e")
-;;                                  ("%k m n" "%k m p")
-;;                                  ("%k m b" "%k m f" "%k m a" "%k m e")
-;;                                  ("%k m m f" "%k m m b" "%k m m a" "%k m m e" "%k m m n" "%k m m p" "%k m m u" "%k m m d"))))
+(use-package devil
+  :ensure t
+  :vc (:url "https://github.com/fbrosda/devil"
+            :branch "dev"
+            :rev :newest)
+  :hook (after-init . global-devil-mode)
+  :bind
+  ([remap describe-key] . devil-describe-key)
+  :config
+  (assoc-delete-all "%k SPC" devil-special-keys)
+  (devil-set-key (kbd "j"))
+  (setq devil-exit-key "k")
+  (setq devil-all-keys-repeatable t)
+  (setq devil-highlight-repeatable t)
+  (setq devil-repeatable-keys '( ("%k p" "%k n" "%k b" "%k f" "%k a" "%k e")
+                                 ("%k m n" "%k m p")
+                                 ("%k m b" "%k m f" "%k m a" "%k m e")
+                                 ("%k m m f" "%k m m b" "%k m m a" "%k m m e" "%k m m n" "%k m m p" "%k m m u" "%k m m d"))))
