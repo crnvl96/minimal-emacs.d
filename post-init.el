@@ -12,6 +12,7 @@
 (require 'rc-trashed)
 (require 'rc-treesit)
 (require 'rc-ace-window)
+(require 'rc-avy)
 (require 'rc-utilities)
 (require 'rc-crux)
 (require 'rc-nov)
