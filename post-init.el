@@ -36,11 +36,3 @@
 (require 'rc-markdown)
 (require 'rc-typst)
 (require 'rc-org)
-
-(defun insert-previous-file-name ()
-  (interactive)
-  (let ((file-name (with-current-buffer (window-buffer (minibuffer-selected-window))
-                     (file-name-nondirectory (buffer-file-name)))))
-    (insert file-name)))
-
-(define-key minibuffer-local-map (kbd "M-i") 'insert-previous-file-name)
