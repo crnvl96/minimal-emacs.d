@@ -6,7 +6,6 @@
 (setq whitespace-highlight-on-current-line t)
 (setq auto-revert-interval 2)
 (setq save-place-limit 150)
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 (unless (and (eq window-system 'mac)
              (bound-and-true-p mac-carbon-version-string))
