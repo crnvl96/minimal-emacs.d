@@ -36,5 +36,3 @@
 (require 'rc-markdown)
 (require 'rc-typst)
 (require 'rc-org)
-
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
