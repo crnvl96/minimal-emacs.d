@@ -12,6 +12,8 @@
   (setq pixel-scroll-precision-use-momentum nil)
   (pixel-scroll-precision-mode 1))
 
+(setq-default display-line-numbers-type 'relative)
+
 (add-hook 'compilation-filter-hook (lambda () (ansi-color-apply-on-region compilation-filter-start (point-max))))
 (add-hook 'after-init-hook #'global-visual-line-mode)
 (add-hook 'after-init-hook #'save-place-mode)
