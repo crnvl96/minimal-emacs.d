@@ -36,7 +36,6 @@
 (require 'rc-markdown)
 (require 'rc-typst)
 (require 'rc-org)
-;; (require 'rc-god-mode)
 
 (defun insert-previous-file-name ()
   (interactive)
