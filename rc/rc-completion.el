@@ -40,6 +40,7 @@
   (setq read-extended-command-predicate #'command-completion-default-include-p
         text-mode-ispell-word-completion nil
         tab-always-indent 'complete)
+  (setq tab-first-completion 'word-or-paren-or-punct)
   :config
   (setq corfu-cycle t)
   (setq corfu-preselect 'prompt)
