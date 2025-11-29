@@ -8,6 +8,9 @@
   (tsx-ts-mode . eglot-ensure)
   (typescript-ts-mode . eglot-ensure)
   :config
+  (setq eglot-sync-connect 0)
+  (setq eglot-autoshutdown t)  ; Shut down server after killing last managed buffer
+  (setq eglot-extend-to-xref t)
   (setq eglot-server-programs
         '( (python-ts-mode . ("pyright-langserver" "--stdio"))
            (go-ts-mode . ("gopls"))
