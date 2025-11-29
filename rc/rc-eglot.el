@@ -12,8 +12,7 @@
   (setq eglot-autoshutdown t)
   (setq eglot-extend-to-xref t)
   (setq jsonrpc-event-hook nil)
-  (setq eglot-events-buffer-size 0)
-  (setq eglot-events-buffer-config '(:size 0 :format short))
+  (setq eglot-events-buffer-config '(:size 0 :format lisp))
   (setq eglot-server-programs
         '( (python-ts-mode . ("pyright-langserver" "--stdio"))
            (go-ts-mode . ("gopls"))
